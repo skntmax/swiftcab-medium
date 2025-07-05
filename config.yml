@@ -1,0 +1,26 @@
+auth:
+  type: DISABLED
+kafka:
+  clusters:
+  - bootstrapServers: kafka-broker:9092
+    consumerProperties: {}
+    kafkaConnect: []
+    masking: []
+    name: local
+    producerProperties: {}
+    properties:
+      security.protocol: PLAINTEXT
+    readOnly: false
+    serde: []
+  - bootstrapServers: localhost:9092
+    consumerProperties: {}
+    kafkaConnect: []
+    masking: []
+    name: cluster2
+    producerProperties: {}
+    properties: {}
+    readOnly: false
+    serde: []
+rbac:
+  roles: []
+webclient: {}
