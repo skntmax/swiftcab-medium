@@ -45,7 +45,7 @@ export class  KafkaService {
       eachMessage: async ({ message }: EachMessagePayload) => {
         const value = message.value?.toString();
         if (value) {
-          console.log(`📥 Received message: ${value}`);
+          // console.log(`📥 Received message: ${value}`);
           onMessageCallback(value);
         }
       },

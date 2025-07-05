@@ -22,7 +22,8 @@ socket1.on(socketEvents.CAB_BOOK, (socket, data) => {
   // sending it to kafka by kafka producers 
   // later on  will be resolved by kafka  consumers
   setTimeout(()=> socket.emit(socketEvents.CAB_BOOKED,{data:{driverName:"narendra"}}) , 5000  ) 
-        sendToKafka({
+        
+  sendToKafka({
           topic:kafkaEvents.topic.CAB_BOOKING,
           partition:0,
           msg:[JSON.stringify(data)]
@@ -31,18 +32,10 @@ socket1.on(socketEvents.CAB_BOOK, (socket, data) => {
 });
 
 
-const  sendToKafka= async (paylod:kafkaSendPayload)=>{
-  const kafkaService = new KafkaService(['localhost:9092'], 'swift-cab-medium');
+ const kafkaService = new KafkaService(['localhost:9092'], kafkaEvents.clientId);
+  const  sendToKafka= async (paylod:kafkaSendPayload)=>{
   await kafkaService.connectProducer();
-
   await kafkaService.sendMessage(paylod.topic, paylod.msg, paylod.partition);
-
-  setTimeout(async ()=>{
-  await kafkaService.createConsumer(kafkaEvents.consumerGroups.CAB_BOOKING.GRP1, kafkaEvents.topic.CAB_BOOKING, (msg) => {
-    console.log('✅ Consumer callback:', msg);
-  })
-  },5000)
-  
   
 } 
 

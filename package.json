@@ -11,7 +11,8 @@
     "build:dev": "npx tsc && env-cmd  -f .env.development node ./dist/server.js",
     "build:prod": "npx tsc && env-cmd  -f .env.production node ./dist/server.js",
     "build:stage": "npx tsc && env-cmd  -f .env.stage node ./dist/server.js",
-    "init:consumer:dev":"npx tsc && env-cmd  -f .env.development node ./dist/consumer_grpups/kafka_consumer.js"
+    "init:kafka:consumer1:dev":"npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer.js",
+    "init:kafka:consumer2:dev":"npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer2.js"
   },
   "keywords": [],
   "author": "",
