@@ -1,6 +1,7 @@
 // import { KafkaService } from "../config/kafkaConnection";
 import { KafkaService } from "../config/kafkaConnection";
 import { kafkaEvents } from "../config/kafkaEvent";
+import { driverMatch } from "../services/driverMatch/driverMatchService";
 // import { kafkaService } from "../server";
 
 const cabBookingConsumer = new KafkaService(['localhost:9092'], kafkaEvents.clientId);
@@ -12,17 +13,8 @@ setTimeout(async () => {
     kafkaEvents.consumerGroups.CAB_BOOKING.GRP1,
     kafkaEvents.topic.CAB_BOOKING,
     (msg:any) => {
-      console.log('🚕 Booking msg:', msg);
+      // console.log('🚕 Booking msg:', msg);
+      driverMatch(msg)
     }
   );
 }, 3000);
-
-// setTimeout(async () => {
-//   await cabCancelConsumer.createConsumer(
-//     kafkaEvents.consumerGroups.CAB_CANCEL.GRP2,
-//     kafkaEvents.topic.CAB_CANCEL,
-//     (msg) => {
-//       console.log('❌ Cancel msg:', msg);
-//     }
-//   );
-// }, 5000);

@@ -39,7 +39,4 @@ socket1.on(socketEvents.CAB_BOOK, (socket, data) => {
   
 } 
 
-
-
-
 socket1.start(Number(port));

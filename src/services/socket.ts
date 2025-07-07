@@ -103,7 +103,7 @@ class SocketServer {
 
   public start(port: number): void {
     server.listen(port, () => {
-      console.log(`🚀 Server listening on http://localhost:${port}`);
+      console.log(`swiftcab-medium Server listening on http://localhost:${port}`);
     });
   }
 }

@@ -1,0 +1,427 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model bank_branch {
+  id             Int              @id @default(autoincrement())
+  branch_name    String?          @db.VarChar(255)
+  bank_id        Int
+  created_on     DateTime         @default(now())
+  updated_on     DateTime
+  banks          banks            @relation(fields: [bank_id], references: [id])
+  driver_profile driver_profile[]
+}
+
+model banks {
+  id             Int              @id @default(autoincrement())
+  bank_name      String?          @db.VarChar(255)
+  created_on     DateTime         @default(now())
+  updated_on     DateTime
+  bank_branch    bank_branch[]
+  driver_profile driver_profile[]
+
+  @@index([bank_name])
+}
+
+model cities {
+  id                 Int                  @id @default(autoincrement())
+  city               String
+  state_id           Int
+  created_on         DateTime             @default(now())
+  updated_on         DateTime
+  states             states               @relation(fields: [state_id], references: [id])
+  localities         localities[]
+  states_have_cities states_have_cities[]
+  users              users?
+}
+
+model countries {
+  id         Int      @id @default(autoincrement())
+  country    String
+  created_on DateTime @default(now())
+  updated_on DateTime
+  states     states[]
+}
+
+model driver_belongs_to_owner {
+  id                                          Int      @id @default(autoincrement())
+  owner                                       Int
+  driver                                      Int
+  created_on                                  DateTime @default(now())
+  updated_on                                  DateTime
+  users_driver_belongs_to_owner_driverTousers users    @relation("driver_belongs_to_owner_driverTousers", fields: [driver], references: [id])
+  users_driver_belongs_to_owner_ownerTousers  users    @relation("driver_belongs_to_owner_ownerTousers", fields: [owner], references: [id])
+}
+
+model driver_profile {
+  id                                             Int         @id @default(autoincrement())
+  DL                                             String?
+  RC                                             String?
+  insurance                                      String?
+  pan_card                                       String?
+  adhar_card                                     String?
+  driver                                         Int         @unique
+  created_on                                     DateTime    @default(now())
+  updated_on                                     DateTime    @default(now())
+  is_varified                                    Boolean?
+  comment                                        String?
+  engaged                                        Boolean?    @default(false)
+  engaged_with_owner                             Int?        @unique
+  engaged_with_vhicle                            Int?        @unique
+  ifsc                                           String?
+  is_bank_varified                               Boolean?    @default(false)
+  wallet_balance                                 Int?        @default(0)
+  wallet_code                                    String?     @unique
+  profile_pic                                    String?
+  bank_account                                   Int
+  bank_account_branch                            Int
+  bank_branch                                    bank_branch @relation(fields: [bank_account_branch], references: [id])
+  banks                                          banks       @relation(fields: [bank_account], references: [id])
+  users_driver_profile_driverTousers             users       @relation("driver_profile_driverTousers", fields: [driver], references: [id])
+  users_driver_profile_engaged_with_ownerTousers users?      @relation("driver_profile_engaged_with_ownerTousers", fields: [engaged_with_owner], references: [id])
+  vhicle                                         vhicle?     @relation(fields: [engaged_with_vhicle], references: [id])
+}
+
+model localities {
+  id                  Int                   @id @default(autoincrement())
+  city_id             Int
+  created_on          DateTime              @default(now())
+  updated_on          DateTime
+  locality            String
+  cities              cities                @relation(fields: [city_id], references: [id])
+  shc_have_localities shc_have_localities[]
+  users               users?
+}
+
+model nav_has_permission_by_role {
+  id          Int       @id @default(autoincrement())
+  role_id     Int
+  nav_item_id Int
+  created_on  DateTime  @default(now())
+  updated_on  DateTime
+  nav_items   nav_items @relation(fields: [nav_item_id], references: [id])
+  roles       roles     @relation(fields: [role_id], references: [id])
+
+  @@unique([role_id, nav_item_id])
+}
+
+model nav_items {
+  id                         Int                          @id @default(autoincrement())
+  nav_item                   String?
+  sub_menu                   Boolean                      @default(false)
+  href                       String?
+  icon                       String?
+  created_on                 DateTime                     @default(now())
+  updated_on                 DateTime
+  nav_has_permission_by_role nav_has_permission_by_role[]
+  sub_nav_items              sub_nav_items[]
+}
+
+model owner_has_vhicles {
+  id         Int      @id @default(autoincrement())
+  owner      Int
+  v_type     Int
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+model permissions {
+  id                   Int                    @id @default(autoincrement())
+  permission_name      String
+  created_on           DateTime               @default(now())
+  updated_on           DateTime
+  role_has_permissions role_has_permissions[]
+}
+
+model role_has_permissions {
+  id          Int         @id @default(autoincrement())
+  role_id     Int
+  perm_id     Int
+  created_on  DateTime    @default(now())
+  updated_on  DateTime
+  permissions permissions @relation(fields: [perm_id], references: [id])
+  roles       roles       @relation(fields: [role_id], references: [id])
+}
+
+model roles {
+  id                         Int                          @id @default(autoincrement())
+  name                       String
+  created_on                 DateTime                     @default(now())
+  updated_on                 DateTime
+  nav_has_permission_by_role nav_has_permission_by_role[]
+  role_has_permissions       role_has_permissions[]
+  user_has_roles             user_has_roles[]
+}
+
+model services_have_utils {
+  id              Int             @id @default(autoincrement())
+  service_id      Int
+  guide           Boolean         @default(false)
+  food            Boolean         @default(false)
+  water           Boolean         @default(false)
+  created_on      DateTime        @default(now())
+  updated_on      DateTime
+  vhicle_services vhicle_services @relation(fields: [service_id], references: [id])
+}
+
+model shc_have_localities {
+  shc_id                                                             Int
+  locality_id                                                        Int
+  created_on                                                         DateTime           @default(now())
+  updated_on                                                         DateTime
+  id                                                                 Int                @id @default(autoincrement())
+  price_per_km                                                       Int
+  localities                                                         localities         @relation(fields: [locality_id], references: [id])
+  states_have_cities                                                 states_have_cities @relation(fields: [shc_id], references: [id])
+  users_have_rides_users_have_rides_destinationToshc_have_localities users_have_rides[] @relation("users_have_rides_destinationToshc_have_localities")
+  users_have_rides_users_have_rides_sourceToshc_have_localities      users_have_rides[] @relation("users_have_rides_sourceToshc_have_localities")
+}
+
+model states {
+  id                 Int                  @id @default(autoincrement())
+  state              String
+  country_id         Int
+  created_on         DateTime             @default(now())
+  updated_on         DateTime
+  cities             cities[]
+  countries          countries            @relation(fields: [country_id], references: [id])
+  states_have_cities states_have_cities[]
+}
+
+model states_have_cities {
+  id                  Int                   @id @default(autoincrement())
+  state_id            Int
+  city_id             Int
+  created_on          DateTime              @default(now())
+  updated_on          DateTime
+  shc_have_localities shc_have_localities[]
+  cities              cities                @relation(fields: [city_id], references: [id])
+  states              states                @relation(fields: [state_id], references: [id])
+}
+
+model sub_nav_items {
+  id           Int       @id @default(autoincrement())
+  sub_nav_item String?
+  sub_menu     Boolean   @default(false)
+  href         String?
+  icon         String?
+  nav_item_id  Int
+  created_on   DateTime  @default(now())
+  updated_on   DateTime
+  is_active    Boolean   @default(true)
+  nav_items    nav_items @relation(fields: [nav_item_id], references: [id])
+}
+
+model travel_ways {
+  id               Int                @id @default(autoincrement())
+  travel_way       String?
+  created_on       DateTime           @default(now())
+  updated_on       DateTime
+  users_have_rides users_have_rides[]
+}
+
+model type_of_user {
+  id         Int      @id @default(autoincrement())
+  user_type  String
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+model type_of_vhicle {
+  id          Int      @id @default(autoincrement())
+  vhicle_type String
+  disc        String
+  created_on  DateTime @default(now())
+  updated_on  DateTime
+  avatar      String?
+  is_active   Boolean  @default(false)
+  vhicle      vhicle[]
+}
+
+model user_has_roles {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  role_id    Int
+  created_on DateTime @default(now())
+  updated_on DateTime
+  roles      roles    @relation(fields: [role_id], references: [id])
+  users      users    @relation(fields: [user_id], references: [id])
+}
+
+model users {
+  id                                                            Int                       @id @default(autoincrement())
+  username                                                      String                    @default("")
+  created_on                                                    DateTime                  @default(now())
+  updated_on                                                    DateTime
+  city_id                                                       Int?                      @unique
+  email                                                         String                    @unique
+  first_name                                                    String?
+  is_active                                                     Boolean                   @default(false)
+  last_name                                                     String?
+  locality_id                                                   Int?                      @unique
+  password                                                      String
+  phone_no                                                      String?
+  isLoggedIn                                                    Boolean?
+  traffic_from                                                  LoginBy                   @default(SWIFTCAB)
+  expiresIn                                                     DateTime?
+  otp                                                           String?
+  avatar                                                        String?
+  driver_belongs_to_owner_driver_belongs_to_owner_driverTousers driver_belongs_to_owner[] @relation("driver_belongs_to_owner_driverTousers")
+  driver_belongs_to_owner_driver_belongs_to_owner_ownerTousers  driver_belongs_to_owner[] @relation("driver_belongs_to_owner_ownerTousers")
+  driver_profile_driver_profile_driverTousers                   driver_profile?           @relation("driver_profile_driverTousers")
+  driver_profile_driver_profile_engaged_with_ownerTousers       driver_profile?           @relation("driver_profile_engaged_with_ownerTousers")
+  user_has_roles                                                user_has_roles[]
+  cities                                                        cities?                   @relation(fields: [city_id], references: [id])
+  localities                                                    localities?               @relation(fields: [locality_id], references: [id])
+  users_have_rides                                              users_have_rides[]
+  vhicle                                                        vhicle[]
+}
+
+model users_have_rides {
+  id                                                                    Int                      @id @default(autoincrement())
+  vh_service_id                                                         Int                      @unique
+  pickup_time                                                           DateTime?
+  drop_time                                                             DateTime?
+  distance                                                              String?
+  user_id                                                               Int
+  source                                                                Int
+  destination                                                           Int
+  is_active                                                             Boolean                  @default(false)
+  total_price                                                           Int
+  created_on                                                            DateTime                 @default(now())
+  updated_on                                                            DateTime
+  is_food                                                               Int
+  is_guide                                                              Int
+  is_water                                                              Int
+  destination_lat                                                       Float?
+  destination_lng                                                       Float?
+  destination_name                                                      String?
+  pickup_date                                                           DateTime?
+  return_date                                                           DateTime?
+  source_lat                                                            Float?
+  source_lng                                                            Float?
+  source_name                                                           String?
+  travel_way                                                            Int
+  shc_have_localities_users_have_rides_destinationToshc_have_localities shc_have_localities      @relation("users_have_rides_destinationToshc_have_localities", fields: [destination], references: [id])
+  utils_config_users_have_rides_is_foodToutils_config                   utils_config             @relation("users_have_rides_is_foodToutils_config", fields: [is_food], references: [id])
+  utils_config_users_have_rides_is_guideToutils_config                  utils_config             @relation("users_have_rides_is_guideToutils_config", fields: [is_guide], references: [id])
+  utils_config_users_have_rides_is_waterToutils_config                  utils_config             @relation("users_have_rides_is_waterToutils_config", fields: [is_water], references: [id])
+  shc_have_localities_users_have_rides_sourceToshc_have_localities      shc_have_localities      @relation("users_have_rides_sourceToshc_have_localities", fields: [source], references: [id])
+  travel_ways                                                           travel_ways              @relation(fields: [travel_way], references: [id])
+  users                                                                 users                    @relation(fields: [user_id], references: [id])
+  vhicle_provides_services                                              vhicle_provides_services @relation(fields: [vh_service_id], references: [id])
+}
+
+model utils_config {
+  id                                                       Int                @id @default(autoincrement())
+  created_on                                               DateTime           @default(now())
+  updated_on                                               DateTime
+  us_id                                                    Int
+  usn_id                                                   Int
+  users_have_rides_users_have_rides_is_foodToutils_config  users_have_rides[] @relation("users_have_rides_is_foodToutils_config")
+  users_have_rides_users_have_rides_is_guideToutils_config users_have_rides[] @relation("users_have_rides_is_guideToutils_config")
+  users_have_rides_users_have_rides_is_waterToutils_config users_have_rides[] @relation("users_have_rides_is_waterToutils_config")
+  utils_status                                             utils_status       @relation(fields: [us_id], references: [id])
+  utils_status_names                                       utils_status_names @relation(fields: [usn_id], references: [id])
+}
+
+model utils_status {
+  id           Int            @id @default(autoincrement())
+  status       String
+  created_on   DateTime       @default(now())
+  updated_on   DateTime
+  utils_config utils_config[]
+}
+
+model utils_status_names {
+  id           Int            @id @default(autoincrement())
+  name         String
+  created_on   DateTime       @default(now())
+  updated_on   DateTime
+  utils_config utils_config[]
+}
+
+model vhicle {
+  id                       Int                        @id @default(autoincrement())
+  username                 String
+  name                     String
+  rc                       String
+  created_on               DateTime                   @default(now())
+  updated_on               DateTime
+  vhicle_type_id           Int
+  vhicle_owner_id          Int
+  chassis_number           String?
+  color                    String?
+  engine_number            String?
+  fuel_type                String?
+  is_active                Boolean                    @default(true)
+  license_plate            String?
+  manufacturer             String?
+  model                    String?
+  transmission             String?
+  vin                      String?
+  year                     DateTime?
+  is_kyc                   Boolean                    @default(false)
+  rc_doc                   String?
+  ss_one                   String?                    @default("")
+  ss_two                   String?                    @default("")
+  kyc_varification         KycStatus                  @default(PENDING)
+  driver_profile           driver_profile?
+  users                    users                      @relation(fields: [vhicle_owner_id], references: [id])
+  type_of_vhicle           type_of_vhicle             @relation(fields: [vhicle_type_id], references: [id])
+  vhicle_has_other_docs    vhicle_has_other_docs[]
+  vhicle_provides_services vhicle_provides_services[]
+}
+
+model vhicle_has_other_docs {
+  id         Int      @id @default(autoincrement())
+  vhicle_id  Int
+  created_on DateTime @default(now())
+  updated_on DateTime
+  basePath   String?
+  doc_id     String?
+  vhicle     vhicle   @relation(fields: [vhicle_id], references: [id])
+}
+
+model vhicle_provides_services {
+  id               Int               @id @default(autoincrement())
+  vhicle_id        Int
+  service_id       Int
+  created_on       DateTime          @default(now())
+  updated_on       DateTime
+  engaged          Boolean           @default(false)
+  users_have_rides users_have_rides?
+  vhicle_services  vhicle_services   @relation(fields: [service_id], references: [id])
+  vhicle           vhicle            @relation(fields: [vhicle_id], references: [id])
+
+  @@unique([vhicle_id, service_id])
+}
+
+model vhicle_services {
+  id                       Int                        @id @default(autoincrement())
+  service_name             String
+  created_on               DateTime                   @default(now())
+  updated_on               DateTime
+  services_have_utils      services_have_utils[]
+  vhicle_provides_services vhicle_provides_services[]
+}
+
+enum KycStatus {
+  INITIATED
+  PENDING
+  VERIFIED
+  COMPLETED
+}
+
+enum LoginBy {
+  SWIFTCAB
+  GOOGLE
+  FACEBOOK
+  MICROSOFT
+  OTHER
+}

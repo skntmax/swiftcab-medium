@@ -8,16 +8,24 @@
     "dev": "env-cmd  -f .env.development nodemon ./src/server.ts",
     "prod": "env-cmd  -f .env.production nodemon ./src/server.ts",
     "stage": "env-cmd  -f .env.stage nodemon ./src/server.ts",
+    
+    "prisma:db:pull:dev":"env-cmd  -f .env.development -- npx prisma db pull && npx tsc",
+    "prisma:db:generate:dev":"env-cmd  -f .env.development -- npx prisma generate && npx tsc",
+
+    "prisma:db:pull:prod":"env-cmd  -f .env.production -- npx prisma db pull && npx tsc",
+    "prisma:db:generate:prod":"env-cmd  -f .env.production -- npx prisma generate && npx tsc",
+
     "build:dev": "npx tsc && env-cmd  -f .env.development node ./dist/server.js",
     "build:prod": "npx tsc && env-cmd  -f .env.production node ./dist/server.js",
     "build:stage": "npx tsc && env-cmd  -f .env.stage node ./dist/server.js",
-    "init:kafka:consumer1:dev":"npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer.js",
-    "init:kafka:consumer2:dev":"npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer2.js"
+    "init:kafka:consumer1:dev": "npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer.js",
+    "init:kafka:consumer2:dev": "npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer2.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.11.1",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "dotenv": "^17.0.1",
