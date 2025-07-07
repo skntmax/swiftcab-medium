@@ -8,13 +8,10 @@
     "dev": "env-cmd  -f .env.development nodemon ./src/server.ts",
     "prod": "env-cmd  -f .env.production nodemon ./src/server.ts",
     "stage": "env-cmd  -f .env.stage nodemon ./src/server.ts",
-    
-    "prisma:db:pull:dev":"env-cmd  -f .env.development -- npx prisma db pull && npx tsc",
-    "prisma:db:generate:dev":"env-cmd  -f .env.development -- npx prisma generate && npx tsc",
-
-    "prisma:db:pull:prod":"env-cmd  -f .env.production -- npx prisma db pull && npx tsc",
-    "prisma:db:generate:prod":"env-cmd  -f .env.production -- npx prisma generate && npx tsc",
-
+    "prisma:db:pull:dev": "env-cmd  -f .env.development -- npx prisma db pull && npx tsc",
+    "prisma:db:generate:dev": "env-cmd  -f .env.development -- npx prisma generate && npx tsc",
+    "prisma:db:pull:prod": "env-cmd  -f .env.production -- npx prisma db pull && npx tsc",
+    "prisma:db:generate:prod": "env-cmd  -f .env.production -- npx prisma generate && npx tsc",
     "build:dev": "npx tsc && env-cmd  -f .env.development node ./dist/server.js",
     "build:prod": "npx tsc && env-cmd  -f .env.production node ./dist/server.js",
     "build:stage": "npx tsc && env-cmd  -f .env.stage node ./dist/server.js",
@@ -26,19 +23,28 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.11.1",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "@socket.io/redis-emitter": "^5.1.0",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/redis": "^4.0.11",
+    "@types/uuid": "^10.0.0",
     "dotenv": "^17.0.1",
     "env-cmd": "^10.1.0",
     "express": "^5.1.0",
+    "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "nodemon": "^3.1.10",
-    "socket.io": "^4.8.1"
+    "redis": "^5.5.6",
+    "socket.io": "^4.8.1",
+    "socket.io-emitter": "^3.2.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.10",
     "@types/socket.io": "^3.0.2",
+    "@types/socket.io-emitter": "^3.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

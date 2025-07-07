@@ -3,6 +3,7 @@ import http from "http";
 import { app } from "../server";
 import { env } from "../config/env";
 import  jwt from "jsonwebtoken"; // make sure to install this
+import { attachRedisAdapter } from "./redis/socketRedisAdapter";
 
 type SocketHandler = (socket: Socket, data: any) => void;
 
@@ -20,10 +21,16 @@ class SocketServer {
     });
 
     this.customEventHandlers = new Map();
+    this.attachRedisAdaptor()
     this.initializeSocketEvents();
     return this;
   }
 
+
+  private async  attachRedisAdaptor  () {
+    await attachRedisAdapter(this.io);
+  }
+   
   private initializeSocketEvents(): void {
     this.io.on("connection", (socket: Socket) => {
       console.log("✅ Client connected:", socket.id);

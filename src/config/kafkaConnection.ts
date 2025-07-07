@@ -20,7 +20,7 @@ export class  KafkaService {
     console.log('✅ Kafka Producer connected');
    }
 
- async sendMessage(topic: string, messages: any[], partition = 0): Promise<void> {
+ async sendMessage(topic: string, partition = 0 ,messages: any[], ): Promise<void> {
   await this.producer.send({
     topic,
     messages: messages.map((msg) => ({
