@@ -28,11 +28,11 @@ setTimeout(async () => {
         const emitter = new Emitter(redisClient1);
         socketId = await redisClient1.get(correlationId)
         if(socketId)
-        emitter.to(socketId).emit(socketEvents.CAB_BOOKED, {name:"drivrname"});
+         setTimeout(()=>emitter.to(socketId).emit(socketEvents.CAB_BOOKED, {name:"drivername"}),4000 )  
 
-        console.log(`✅ Emit successful to socket ID ${socketId}`);
+        console.log(`Emit successful to socket ID ${socketId}`);
       } catch (err) {
-        console.error('❌ Error handling Kafka cab booking message:', err);
+        console.error('Error handling Kafka cab booking message:', err);
       }
     }
   );
