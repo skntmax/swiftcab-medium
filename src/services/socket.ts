@@ -33,7 +33,7 @@ class SocketServer {
    
   private initializeSocketEvents(): void {
     this.io.on("connection", (socket: Socket) => {
-      console.log("✅ Client connected:", socket.id);
+      console.log("Client connected:", socket.id);
 
       // Built-in event
       socket.on("message", (data) => {

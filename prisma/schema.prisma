@@ -49,13 +49,21 @@ model countries {
 }
 
 model driver_belongs_to_owner {
-  id                                          Int      @id @default(autoincrement())
-  owner                                       Int
-  driver                                      Int
-  created_on                                  DateTime @default(now())
-  updated_on                                  DateTime
-  users_driver_belongs_to_owner_driverTousers users    @relation("driver_belongs_to_owner_driverTousers", fields: [driver], references: [id])
-  users_driver_belongs_to_owner_ownerTousers  users    @relation("driver_belongs_to_owner_ownerTousers", fields: [owner], references: [id])
+  id                                              Int               @id @default(autoincrement())
+  owner                                           Int
+  driver                                          Int
+  created_on                                      DateTime          @default(now())
+  updated_on                                      DateTime
+  assigned_vhicle                                 Int?              @unique
+  engaged                                         Boolean           @default(false)
+  is_active                                       Boolean           @default(true)
+  self                                            Boolean           @default(false)
+  updated_by                                      Int
+  vhicle                                          vhicle?           @relation(fields: [assigned_vhicle], references: [id])
+  users_driver_belongs_to_owner_driverTousers     users             @relation("driver_belongs_to_owner_driverTousers", fields: [driver], references: [id])
+  users_driver_belongs_to_owner_ownerTousers      users             @relation("driver_belongs_to_owner_ownerTousers", fields: [owner], references: [id])
+  users_driver_belongs_to_owner_updated_byTousers users             @relation("driver_belongs_to_owner_updated_byTousers", fields: [updated_by], references: [id])
+  users_have_rides                                users_have_rides?
 }
 
 model driver_profile {
@@ -254,46 +262,45 @@ model user_has_roles {
 }
 
 model users {
-  id                                                            Int                       @id @default(autoincrement())
-  username                                                      String                    @default("")
-  created_on                                                    DateTime                  @default(now())
-  updated_on                                                    DateTime
-  city_id                                                       Int?                      @unique
-  email                                                         String                    @unique
-  first_name                                                    String?
-  is_active                                                     Boolean                   @default(false)
-  last_name                                                     String?
-  locality_id                                                   Int?                      @unique
-  password                                                      String
-  phone_no                                                      String?
-  isLoggedIn                                                    Boolean?
-  traffic_from                                                  LoginBy                   @default(SWIFTCAB)
-  expiresIn                                                     DateTime?
-  otp                                                           String?
-  avatar                                                        String?
-  driver_belongs_to_owner_driver_belongs_to_owner_driverTousers driver_belongs_to_owner[] @relation("driver_belongs_to_owner_driverTousers")
-  driver_belongs_to_owner_driver_belongs_to_owner_ownerTousers  driver_belongs_to_owner[] @relation("driver_belongs_to_owner_ownerTousers")
-  driver_profile_driver_profile_driverTousers                   driver_profile?           @relation("driver_profile_driverTousers")
-  driver_profile_driver_profile_engaged_with_ownerTousers       driver_profile?           @relation("driver_profile_engaged_with_ownerTousers")
-  user_has_roles                                                user_has_roles[]
-  cities                                                        cities?                   @relation(fields: [city_id], references: [id])
-  localities                                                    localities?               @relation(fields: [locality_id], references: [id])
-  users_have_rides                                              users_have_rides[]
-  vhicle                                                        vhicle[]
+  id                                                                Int                       @id @default(autoincrement())
+  username                                                          String                    @default("")
+  created_on                                                        DateTime                  @default(now())
+  updated_on                                                        DateTime
+  city_id                                                           Int?                      @unique
+  email                                                             String                    @unique
+  first_name                                                        String?
+  is_active                                                         Boolean                   @default(false)
+  last_name                                                         String?
+  locality_id                                                       Int?                      @unique
+  password                                                          String
+  phone_no                                                          String?
+  isLoggedIn                                                        Boolean?
+  traffic_from                                                      LoginBy                   @default(SWIFTCAB)
+  expiresIn                                                         DateTime?
+  otp                                                               String?
+  avatar                                                            String?
+  driver_belongs_to_owner_driver_belongs_to_owner_driverTousers     driver_belongs_to_owner[] @relation("driver_belongs_to_owner_driverTousers")
+  driver_belongs_to_owner_driver_belongs_to_owner_ownerTousers      driver_belongs_to_owner[] @relation("driver_belongs_to_owner_ownerTousers")
+  driver_belongs_to_owner_driver_belongs_to_owner_updated_byTousers driver_belongs_to_owner[] @relation("driver_belongs_to_owner_updated_byTousers")
+  driver_profile_driver_profile_driverTousers                       driver_profile?           @relation("driver_profile_driverTousers")
+  driver_profile_driver_profile_engaged_with_ownerTousers           driver_profile?           @relation("driver_profile_engaged_with_ownerTousers")
+  user_has_roles                                                    user_has_roles[]
+  cities                                                            cities?                   @relation(fields: [city_id], references: [id])
+  localities                                                        localities?               @relation(fields: [locality_id], references: [id])
+  users_have_rides                                                  users_have_rides[]
+  vhicle                                                            vhicle[]
 }
 
 model users_have_rides {
-  id                                                                    Int                      @id @default(autoincrement())
-  vh_service_id                                                         Int                      @unique
+  id                                                                    Int                     @id @default(autoincrement())
   pickup_time                                                           DateTime?
   drop_time                                                             DateTime?
   distance                                                              String?
   user_id                                                               Int
   source                                                                Int
   destination                                                           Int
-  is_active                                                             Boolean                  @default(false)
-  total_price                                                           Int
-  created_on                                                            DateTime                 @default(now())
+  is_active                                                             Boolean                 @default(false)
+  created_on                                                            DateTime                @default(now())
   updated_on                                                            DateTime
   is_food                                                               Int
   is_guide                                                              Int
@@ -307,14 +314,18 @@ model users_have_rides {
   source_lng                                                            Float?
   source_name                                                           String?
   travel_way                                                            Int
-  shc_have_localities_users_have_rides_destinationToshc_have_localities shc_have_localities      @relation("users_have_rides_destinationToshc_have_localities", fields: [destination], references: [id])
-  utils_config_users_have_rides_is_foodToutils_config                   utils_config             @relation("users_have_rides_is_foodToutils_config", fields: [is_food], references: [id])
-  utils_config_users_have_rides_is_guideToutils_config                  utils_config             @relation("users_have_rides_is_guideToutils_config", fields: [is_guide], references: [id])
-  utils_config_users_have_rides_is_waterToutils_config                  utils_config             @relation("users_have_rides_is_waterToutils_config", fields: [is_water], references: [id])
-  shc_have_localities_users_have_rides_sourceToshc_have_localities      shc_have_localities      @relation("users_have_rides_sourceToshc_have_localities", fields: [source], references: [id])
-  travel_ways                                                           travel_ways              @relation(fields: [travel_way], references: [id])
-  users                                                                 users                    @relation(fields: [user_id], references: [id])
-  vhicle_provides_services                                              vhicle_provides_services @relation(fields: [vh_service_id], references: [id])
+  is_running                                                            Boolean                 @default(false)
+  payment_method                                                        payMethod               @default(CASH)
+  total_fare                                                            Int
+  vhicle_driver                                                         Int                     @unique
+  shc_have_localities_users_have_rides_destinationToshc_have_localities shc_have_localities     @relation("users_have_rides_destinationToshc_have_localities", fields: [destination], references: [id])
+  utils_config_users_have_rides_is_foodToutils_config                   utils_config            @relation("users_have_rides_is_foodToutils_config", fields: [is_food], references: [id])
+  utils_config_users_have_rides_is_guideToutils_config                  utils_config            @relation("users_have_rides_is_guideToutils_config", fields: [is_guide], references: [id])
+  utils_config_users_have_rides_is_waterToutils_config                  utils_config            @relation("users_have_rides_is_waterToutils_config", fields: [is_water], references: [id])
+  shc_have_localities_users_have_rides_sourceToshc_have_localities      shc_have_localities     @relation("users_have_rides_sourceToshc_have_localities", fields: [source], references: [id])
+  travel_ways                                                           travel_ways             @relation(fields: [travel_way], references: [id])
+  users                                                                 users                   @relation(fields: [user_id], references: [id])
+  driver_belongs_to_owner                                               driver_belongs_to_owner @relation(fields: [vhicle_driver], references: [id])
 }
 
 model utils_config {
@@ -371,6 +382,7 @@ model vhicle {
   ss_one                   String?                    @default("")
   ss_two                   String?                    @default("")
   kyc_varification         KycStatus                  @default(PENDING)
+  driver_belongs_to_owner  driver_belongs_to_owner?
   driver_profile           driver_profile?
   users                    users                      @relation(fields: [vhicle_owner_id], references: [id])
   type_of_vhicle           type_of_vhicle             @relation(fields: [vhicle_type_id], references: [id])
@@ -389,15 +401,14 @@ model vhicle_has_other_docs {
 }
 
 model vhicle_provides_services {
-  id               Int               @id @default(autoincrement())
-  vhicle_id        Int
-  service_id       Int
-  created_on       DateTime          @default(now())
-  updated_on       DateTime
-  engaged          Boolean           @default(false)
-  users_have_rides users_have_rides?
-  vhicle_services  vhicle_services   @relation(fields: [service_id], references: [id])
-  vhicle           vhicle            @relation(fields: [vhicle_id], references: [id])
+  id              Int             @id @default(autoincrement())
+  vhicle_id       Int
+  service_id      Int
+  created_on      DateTime        @default(now())
+  updated_on      DateTime
+  engaged         Boolean         @default(false)
+  vhicle_services vhicle_services @relation(fields: [service_id], references: [id])
+  vhicle          vhicle          @relation(fields: [vhicle_id], references: [id])
 
   @@unique([vhicle_id, service_id])
 }
@@ -424,4 +435,10 @@ enum LoginBy {
   FACEBOOK
   MICROSOFT
   OTHER
+}
+
+enum payMethod {
+  UPI
+  CASH
+  ONLINE
 }

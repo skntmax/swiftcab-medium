@@ -13,7 +13,7 @@
     "prisma:db:pull:prod": "env-cmd  -f .env.production -- npx prisma db pull && npx tsc",
     "prisma:db:generate:prod": "env-cmd  -f .env.production -- npx prisma generate && npx tsc",
     "build:dev": "npx tsc && env-cmd  -f .env.development node ./dist/server.js",
-    "build:prod": "npx tsc && env-cmd  -f .env.production node ./dist/server.js",
+    "build:prod": "npx tsc && env-cmd  -f .env.production node ./dist/server.js ",
     "build:stage": "npx tsc && env-cmd  -f .env.stage node ./dist/server.js",
     "init:kafka:consumer1:dev": "npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer.js",
     "init:kafka:consumer2:dev": "npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer2.js"
