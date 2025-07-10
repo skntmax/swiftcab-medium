@@ -1,15 +1,15 @@
 services:
-  kafbat-ui:
-    container_name: kafbat-ui-prod
-    image: ghcr.io/kafbat/kafka-ui:latest
-    ports:
-      - 8080:8080
-    depends_on:
-      - broker
-    environment:
-      DYNAMIC_CONFIG_ENABLED: 'true'
-    volumes:
-      - C:\Users\skntj\Desktop\swiftcab-medium\config.yml:/etc/kafkaui/dynamic_config.yaml
+  # kafbat-ui:
+  #   container_name: kafbat-ui-prod
+  #   image: ghcr.io/kafbat/kafka-ui:latest
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - broker
+  #   environment:
+  #     DYNAMIC_CONFIG_ENABLED: 'true'
+  #   volumes:
+  #     - C:\Users\skntj\Desktop\swiftcab-medium\config.yml:/etc/kafkaui/dynamic_config.yaml
 
   broker:
     image: apache/kafka:latest

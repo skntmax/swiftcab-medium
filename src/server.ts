@@ -40,12 +40,6 @@ socket1.on(socketEvents.CAB_BOOK, async (socket, data) => {
    // Store socket.id in Redis with correlationId in db0 of redis
   await redisClient1.set(correlationId, socketId);
   await redisClient1.expire(correlationId, 30); // auto-expire in 30 sec
-
-
-  // Store socket.id in Redis with correlationId in db1 of redis
-  await redisClient2.set(correlationId, socketId);
-  await redisClient2.expire(correlationId, 30); // auto-expire in 30 sec
-
   
   console.log(`📩 Stored socketId: ${socketId} for correlationId: ${correlationId}`);
 
