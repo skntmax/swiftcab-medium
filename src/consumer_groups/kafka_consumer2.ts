@@ -6,11 +6,12 @@ import { Emitter } from '@socket.io/redis-emitter';
 import config from "../config/config";
 import { RedisConn } from "../services/redis/redis.index";
 
+let KAFKA_PORT  = process.env.KAFKA_HOST || "localhost:9092"
 // Create Redis Client for emitter (must match socket adapter config)
 const redisClient2 = (new RedisConn(config.redisConn.redisConnection2)).redisClient;
 
 // Create Kafka consumer for cab booking
-const cabBookingConsumer = new KafkaService(['localhost:9092'], kafkaEvents.clientId);
+const cabBookingConsumer = new KafkaService([KAFKA_PORT], kafkaEvents.clientId);
 
 setTimeout(async () => {
   await cabBookingConsumer.createConsumer(

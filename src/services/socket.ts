@@ -4,6 +4,7 @@ import { app } from "../server";
 import { env } from "../config/env";
 import  jwt from "jsonwebtoken"; // make sure to install this
 import { attachRedisAdapter } from "./redis/socketRedisAdapter";
+import { CONSOLE_COLORS } from "../config/constant";
 
 type SocketHandler = (socket: Socket, data: any) => void;
 
@@ -33,7 +34,7 @@ class SocketServer {
    
   private initializeSocketEvents(): void {
     this.io.on("connection", (socket: Socket) => {
-      console.log("Client connected:", socket.id);
+      console.log(CONSOLE_COLORS.BgGreen, "[[ Client connected:", socket.id, "]]");
 
       // Built-in event
       socket.on("message", (data) => {
@@ -110,7 +111,7 @@ class SocketServer {
 
   public start(port: number): void {
     server.listen(port, () => {
-      console.log(`swiftcab-medium Server listening on http://localhost:${port}`);
+      console.log(CONSOLE_COLORS.BgBlue, `[[ swiftcab-medium Server listening on http://localhost:${port} ]]`);
     });
   }
 }

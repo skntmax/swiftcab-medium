@@ -7,8 +7,8 @@ const config =  {
       quizCacheTime:36000, 
       notification_cache_clear:60, 
       defaultPass: "$2a$10$PUcRF6VdSBEPYSl0jDiuzeeqK.4XRqvUrl9VVN39RvIyIX7tm21W6",
-      redisConn :{
       
+      redisConn :{
       redisConnection1: { // be default 
         host: "localhost",
         port: Number(env.REDIS_PORT) ,

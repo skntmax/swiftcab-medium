@@ -34,3 +34,4 @@ services:
     container_name: redis_stack_dev
     ports:
       - "6379:6379"
+      - "8001:8001"
