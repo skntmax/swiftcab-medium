@@ -10,7 +10,7 @@ const instanceCount = 10;
 
 for (let i = 1; i <= instanceCount; i++) {
   const name = `kafka-driver-pool-consumer-${i}`;
-  const command = `pm2 start npm --name "${name}" -- run init:kafka:driver_consumer_pool:dev`;
+  const command = `pm2 start npm --name "${name}" -- run init:kafka:driver_consumer_pool:prod`;
 
   console.log(`🚀 Spawning ${name}...`);
   exec(command, (error, stdout, stderr) => {
