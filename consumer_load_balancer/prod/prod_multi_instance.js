@@ -6,7 +6,7 @@ const path = require("path");
 dotenv.config({ path: path.resolve(__dirname, "./../../.env.development") });
 
 // Number of Kafka consumer pool instances you want
-const instanceCount = 10;
+const instanceCount = 4;
 
 for (let i = 1; i <= instanceCount; i++) {
   const name = `kafka-driver-pool-consumer-${i}`;
