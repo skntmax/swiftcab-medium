@@ -34,4 +34,15 @@ services:
     container_name: redis_stack_dev
     ports:
       - "6379:6379"
-      - "8001:8001"
+
+  # kafka-driver-pool-consumer:
+  #   build: ./kafka_consumer_compose/dev
+  #   env_file:
+  #     - .env.development
+  #   depends_on:
+  #     - broker
+  #     - redis
+  #   deploy:
+  #     replicas: 10
+  #   restart: always
+      # - "8001:8001"

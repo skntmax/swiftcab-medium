@@ -16,15 +16,6 @@ const sendToKafka = async ({ topic, partition, msg }: { topic: string, partition
   await kafka.sendMessage(topic, partition, msg);
 };
 
-
-
-
-
-const handleAvailableDriver =async (driver: any)=>{
-   // some  driver logic alogorithm or something 
-   return  driver
-}
-
 setTimeout(async () => {
   await kafka.createConsumer(
     kafkaEvents.consumerGroups.CAB_BOOKING.GRP1,

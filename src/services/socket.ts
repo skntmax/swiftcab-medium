@@ -5,7 +5,7 @@ import { env } from "../config/env";
 import  jwt from "jsonwebtoken"; // make sure to install this
 import { attachRedisAdapter } from "./redis/socketRedisAdapter";
 import { CONSOLE_COLORS } from "../config/constant";
-
+import Express from 'express';
 type SocketHandler = (socket: Socket, data: any) => void;
 
 const server = http.createServer(app);

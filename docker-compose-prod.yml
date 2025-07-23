@@ -15,7 +15,7 @@ services:
     image: apache/kafka:latest
     container_name: kafka-broker-prod
     ports:
-      - "9092:9092"
+      - "9094:9092"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -31,6 +31,18 @@ services:
       KAFKA_NUM_PARTITIONS: 3
   redis:
     image: redis/redis-stack:latest
-    container_name: redis_stack_production
+    container_name: redis_stack_dev
     ports:
-      - "6380:6379"
+      - "6381:6379"
+
+  kafka-driver-pool-consumer:
+    build: ./kafka_consumer_compose/prod
+    env_file:
+      - .env.production
+    depends_on:
+      - broker
+      - redis
+    deploy:
+      replicas: 10
+    restart: always
+      # - "8001:8001"    
