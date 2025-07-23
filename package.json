@@ -17,7 +17,7 @@
     "build:stage": "npx tsc && env-cmd  -f .env.stage node ./dist/server.js",
 
     "global:kafka:consumers:dev":"node ./consumer_load_balancer/dev/dev_multi_instance.js",
-    "global:kafka:consumers:prod":"node ./consumer_load_balancer/dev/prod_multi_instance.js",
+    "global:kafka:consumers:prod":"node ./consumer_load_balancer/prod/prod_multi_instance.js",
     "init:kafka:consumer1:dev": "npx tsc && env-cmd  -f .env.development nodemon ./dist/consumer_groups/kafka_consumer.js",
     "init:kafka:consumer2:dev": "npx tsc && env-cmd  -f .env.development nodemon ./dist/consumer_groups/kafka_consumer2.js",
     "init:kafka:driver_consumer_pool:dev": "npx tsc && env-cmd  -f .env.development nodemon ./dist/consumer_groups/driver_pool_consumer.js",
