@@ -8,8 +8,8 @@ services:
       - broker
     environment:
       DYNAMIC_CONFIG_ENABLED: 'true'
-    volumes:
-      - C:\Users\skntj\Desktop\swiftcab-medium\config.yml:/etc/kafkaui/dynamic_config.yaml
+    # volumes:
+    #   - C:\Users\skntj\Desktop\swiftcab-medium\config.yml:/etc/kafkaui/dynamic_config.yaml
 
   broker:
     image: apache/kafka:latest
