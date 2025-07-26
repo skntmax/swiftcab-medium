@@ -1,5 +1,5 @@
 export interface kafkaSendPayload {
  topic: string  
- partition: number
+ partition: number 
  msg:string[] | any   
 }

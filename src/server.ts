@@ -17,8 +17,11 @@ import cors from 'cors'
 
 export let app = Express();
 let port = env.PORT || 6000;
-let kafkaPort = env.KAFKA_HOST || "localhost:9092";
+let kafkaHost = env.KAFKA_HOST || "localhost:9092";
 
+function togglePartition() {
+  return  Math.floor(Math.random() * kafkaEvents.PARTITIONS.TP_AVAILABLE_DRIVERS_POOL);
+}
 
 export const socket1 = new SocketServer();
 
@@ -35,17 +38,21 @@ app.use(cors({
  }))
 
  
-app.post('/driver-live-location', (req, res) => {
-  console.log("req.body",req.body)
-  res.send('Driver live location received');
-})
+// app.post('/driver-live-location', (req, res) => {
+//   console.log("req.body",req.body)
+//   res.send('Driver live location received');
+// })
  
 // kafka  first service 
- const kafkaService = new KafkaService([kafkaPort], kafkaEvents.clientId);
+ const kafkaService = new KafkaService([kafkaHost], `swift-cab-medium`);
+ (async function initKafkaService(){
+  await kafkaService.createTopics();
+  await kafkaService.listTopicsWithPartitions();
+ })()
+ 
   
  //  sending msg  to  kafka  
  async function  sendToKafka(paylod:kafkaSendPayload){
-  await kafkaService.createTopics();
   await kafkaService.connectProducer();
   await kafkaService.sendMessage(paylod.topic,paylod.partition, paylod.msg );
 } 
@@ -96,7 +103,7 @@ socket1.on(socketEvents.EV_DRIVER_LIVE_LOCATION, async (socket, driverLocation) 
   
    sendToKafka({
           topic:kafkaEvents.topic.TP_AVAILABLE_DRIVERS_POOL,
-          partition:0,
+          partition:togglePartition(),
           msg: [JSON.stringify({ ...driverLocation})]
         })     
 });
