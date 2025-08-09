@@ -35,6 +35,7 @@ async function init() {
         const usersData = JSON.parse(msg);
         const { correlationId, user } = usersData;
 
+        console.log("Received Kafka message:", usersData);
         const customerSocketId = await redisClient.get(correlationId);
         let availableDivers =await findNearbyDrivers(usersData)
 
@@ -49,8 +50,8 @@ async function init() {
                 driverDetails :{...driver},
                 customerViewDetails:driver?.customerViewDetails
               });
-                console.log(`Sent ride request to driver: ${driver.username}`);
-             }
+              console.log(`Sent ride request to driver: ${driver.username}`);
+            }
           }
 
           // Optional Emit Example
@@ -100,9 +101,16 @@ async function findNearbyDrivers(customerLocationInfo:any): Promise<{
           "WITHDIST"
       ) as [string, string][];
 
-    const availableDrivers = await findAvailableDriversRecursively(nearbyDrivers, redisClient, customerLocationInfo);
-    
-    console.log("availableDrivers>>",availableDrivers.map((ele:any)=> ele.username));
+    console.log("Found Near by driver ", nearbyDrivers ,"for pickup location", {
+        pickup_lat: pickupLat,
+        pickup_lng: pickupLng,
+        underRadium:RADIUS_KM+"KM",
+        drop_lat: customerLocationInfo?.drop_lat,
+        drop_lng: customerLocationInfo?.drop_lng,
+        customer:customerLocationInfo?.user?.username,
+    });
+
+    const availableDrivers = await findAvailableDriversRecursively(nearbyDrivers, redisClient, customerLocationInfo);    
     return availableDrivers;
   } catch (err) {
     console.error("Redis error:", err);
@@ -129,6 +137,7 @@ async function findAvailableDriversRecursively(
     }
   }
 
+  console.log("availableDrivers", availableDrivers);
   if (availableDrivers.length === 0) {
     // Wait 1 second before retrying (you can change this)
     await new Promise((resolve) => setTimeout(resolve, 1000)); // wait for 1 sec and again search for drivers 
