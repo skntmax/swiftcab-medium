@@ -1,62 +1,139 @@
-import { KafkaService } from "../config/kafkaConnection";
+// Imports
 import { kafkaEvents } from "../config/kafkaEvent";
 import { driverMatch } from "../services/driverMatch/driverMatchService";
 import { socketEvents } from "../config/socketEvents";
-import { Emitter } from '@socket.io/redis-emitter';
+import { Emitter } from "@socket.io/redis-emitter";
 import config from "../config/config";
 import { RedisConn } from "../services/redis/redis.index";
+import { KafkaService } from "./consumerInstance";
+import { GOE_HASH_KEYS } from "../config/constant";
 
-const KAFKA_PORT = process.env.KAFKA_HOST || "localhost:9092";
+// Kafka and Redis Configuration
+const uniqueClientId = `swift-cab-medium-${Math.random().toString(36).substring(7)}`;
+const KAFKA_HOST = process.env.KAFKA_HOST || "localhost:9092";
+
 const redisClient = new RedisConn(config.redisConn.redisConnection1).redisClient;
-const kafka = new KafkaService([KAFKA_PORT], kafkaEvents.clientId);
+
+const kafka = new KafkaService({
+  brokers: [KAFKA_HOST],
+  clientId: uniqueClientId,
+  groupId: kafkaEvents.consumerGroups.CAB_BOOKING.GRP2,
+  topic: kafkaEvents.topic.CAB_BOOKING,
+});
+
 const emitter = new Emitter(redisClient);
 
-const sendToKafka = async ({ topic, partition, msg }: { topic: string, partition: number, msg: any }) => {
-  await kafka.connectProducer();
-  await kafka.sendMessage(topic, partition, msg);
-};
+// Kafka Consumer Initialization
+async function init() {
+  try {
+    console.log("Connecting Kafka...");
+    // await kafka.connect(); // Optional
+    console.log("Kafka Connected. Starting Consumer...");
 
-setTimeout(async () => {
-  await kafka.createConsumer(
-    kafkaEvents.consumerGroups.CAB_BOOKING.GRP1,
-    kafkaEvents.topic.CAB_BOOKING,
-    async (msg) => {
+    await kafka.startBatchConsumer(async (msg: string) => {
       try {
-        const { correlationId, user } = JSON.parse(msg);
-        let foundDriver = {driver:"ok"}
-      
-          // await kafka.createConsumer(
-          //   kafkaEvents.consumerGroups.AVAILABLE_DRIVER.GRP1,
-          //   kafkaEvents.topic.AVAILABLE_DRIVERS,
-          //   async (availalableDriverDetails) => {
-          //     console.log("Received driver:>>", availalableDriverDetails);
-          //     foundDriver = availalableDriverDetails;
+        const usersData = JSON.parse(msg);
+        const { correlationId, user } = usersData;
 
-          //     // You can also call a function here
-          //     await handleAvailableDriver(availalableDriverDetails);
-          //   }
-          // );
+        const customerSocketId = await redisClient.get(correlationId);
+        let availableDivers =await findNearbyDrivers(usersData)
 
-        console.log(foundDriver)
-        
-        await sendToKafka({
-          topic: kafkaEvents.topic.CAB_BOOKED,
-          partition: 0,
-          msg: [JSON.stringify(foundDriver)],
-        });
+         // 🔁 Invite all available drivers
+          for (const driver of availableDivers) {
+            const driverSocketId = await redisClient.get(driver.meta.correlationId); // or driver.meta.socket_id or similar key
+            if (driverSocketId) {
+              emitter.to(driverSocketId).emit(socketEvents.NEW_RIDE_REQUEST, {
+                userDetails: user,
+                pickupLocation: usersData?.pickup_name,
+                distance: usersData?.distance,
+                driverDetails :{...driver},
+                customerViewDetails:driver?.customerViewDetails
+              });
+              console.log(`Sent ride request to driver: ${driver.username}`);
+            }
+          }
 
-        const socketId = await redisClient.get(correlationId);
-        if (socketId) {
-          setTimeout(() => {
-            emitter.to(socketId).emit(socketEvents.CAB_BOOKED, foundDriver);
-            console.log(`Emit successful to socket ID ${socketId}`);
-          }, 4000);
-        }
+          // Optional Emit Example
+          // if (customerSocketId) {
+          //   const foundDriver = { driver: "ok" };
+          //   setTimeout(() => {
+          //     emitter.to(customerSocketId).emit(socketEvents.CAB_BOOKED, foundDriver);
+          //     console.log(`Emit successful to socket ID ${customerSocketId}`);
+          //   }, 4000);
+          // }
 
-        console.log("user>>", user, correlationId, socketId);
+        console.log(usersData);
       } catch (err) {
-        console.error('Kafka CAB_BOOKING error:', err);
+        console.error("❌ Error processing Kafka message:", err);
       }
+    });
+  } catch (err) {
+    console.error("❌ Error initializing Kafka Consumer:", err);
+  }
+}
+
+init();
+
+// Nearby Driver Finder
+async function findNearbyDrivers(customerLocationInfo:any): Promise<{
+  username: string;
+  distance: string;
+  meta: Record<string, string>
+  customerViewDetails:any
+}[]> {
+  try {
+    const pickupLat = customerLocationInfo?.pickup_lat;
+    const pickupLng = customerLocationInfo?.pickup_lng;
+    const RADIUS_KM = 5;
+
+      // Replace with actual key if dynamic
+        const GEO_KEY = GOE_HASH_KEYS.NOIDA_GEO_HASH;
+
+          const nearbyDrivers = await redisClient.geosearch(
+          GEO_KEY,
+          "FROMLONLAT",
+          pickupLng,
+          pickupLat,
+          "BYRADIUS",
+          RADIUS_KM,
+          "km",
+          "WITHDIST"
+      ) as [string, string][];
+
+    const availableDrivers = await findAvailableDriversRecursively(nearbyDrivers, redisClient, customerLocationInfo);
+    
+    console.log("availableDrivers>>",availableDrivers.map((ele:any)=> ele.username));
+    return availableDrivers;
+  } catch (err) {
+    console.error("Redis error:", err);
+    return [];
+  }
+}
+
+
+async function findAvailableDriversRecursively(
+  nearbyDrivers: [string, string][],
+  redisClient: any,
+  customerLocationInfo: any,
+  availableDrivers: any[] = []
+): Promise<any[]> {
+  for (const [username, distance] of nearbyDrivers) {
+    const meta = await redisClient.hgetall(`driver:${username}:meta`);
+    if (meta?.isAvailable === "true") {
+      availableDrivers.push({
+        username,
+        distance,
+        meta,
+        customerViewDetails: customerLocationInfo,
+      });
     }
-  );
-}, 1000);
+  }
+
+  if (availableDrivers.length === 0) {
+    // Wait 1 second before retrying (you can change this)
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // wait for 1 sec and again search for drivers 
+    return findAvailableDriversRecursively(nearbyDrivers, redisClient, customerLocationInfo, []);
+  }
+
+  return availableDrivers;
+}

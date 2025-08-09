@@ -24,7 +24,7 @@ exec("npx tsc", (tscErr, tscStdout, tscStderr) => {
   const instanceCount = 5;
 
   for (let i = 1; i <= instanceCount; i++) {
-    const name = `kafka-driver-pool-consumer-${i}`;
+    const name = `kafka-driver-pool-consumer-dev-${i}`;
 
     const command = isWindows
       ? `pm2 start cmd --name "${name}" -- /c "npm run init:kafka:driver_consumer_pool:dev"`

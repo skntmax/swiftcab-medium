@@ -52,6 +52,10 @@ export const REDIS_QUEUES  = {
 }
 
 
+export const GOE_HASH_KEYS = {
+    NOIDA_GEO_HASH:"driver:location:noida:geo", // for driver location
+}
+
 export const CONSOLE_COLORS = {
   Reset: "\x1b[0m",
   Bright: "\x1b[1m",
