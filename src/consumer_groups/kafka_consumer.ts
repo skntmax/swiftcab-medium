@@ -49,8 +49,8 @@ async function init() {
                 driverDetails :{...driver},
                 customerViewDetails:driver?.customerViewDetails
               });
-              console.log(`Sent ride request to driver: ${driver.username}`);
-            }
+                console.log(`Sent ride request to driver: ${driver.username}`);
+             }
           }
 
           // Optional Emit Example
