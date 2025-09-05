@@ -31,6 +31,8 @@ async function init() {
         // const GEO_KEY = `driver:${driverUsername}:geo`; // geo of this driver 
         const GEO_KEY = GOE_HASH_KEYS.NOIDA_GEO_HASH; // geo of this driver 
         
+
+        console.log("driverData>>", driverData)
         // if driver is not logged in then remove from redis
         if(!driverData?.isLoggedIn) {
         // Remove driver from GEO set

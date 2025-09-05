@@ -28,7 +28,7 @@ async function init() {
   try {
     console.log("Connecting Kafka...");
     // await kafka.connect(); // Optional
-    console.log("Kafka Connected. Starting Consumer...");
+    console.log("Kafka Connected. Starting CAB_BOOKING Consumer...");
 
     await kafka.startBatchConsumer(async (msg: string) => {
       try {

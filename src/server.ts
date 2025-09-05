@@ -26,7 +26,6 @@ function togglePartition() {
 
 export const socket1 = new SocketServer();
 
-
 socket1.on("custom-event", (socket, data) => {
   console.log("Custom event triggered by:", socket.id, "with data:", data);
   socket.emit("custom-event-response", { msg: "Handled from class!" });
