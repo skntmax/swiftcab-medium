@@ -1,13 +1,67 @@
 const { exec } = require("child_process");
 const dotenv = require("dotenv");
 const path = require("path");
-const os = require("os");
 
 dotenv.config({ path: path.resolve(__dirname, "./../.env.production") });
-
+const os = require("os");
 const isWindows = os.platform() === "win32";
 
-// First compile the TypeScript files
+// Utility to run shell commands
+function runCommand(command, name) {
+  exec(command, (err, stdout, stderr) => {
+    if (err) {
+      console.error(`❌ Error starting ${name}:`, err.message);
+      return;
+    }
+    if (stderr) {
+      console.error(`⚠️ ${name} stderr:`, stderr);
+      return;
+    }
+    console.log(`✅ ${name} started:\n${stdout}`);
+  });
+}
+
+// Function to spawn pm2 processes for a script
+function spawnInstances(scriptName, baseName, count) {
+  for (let i = 1; i <= count; i++) {
+    const name = `${baseName}-${i}`;
+    const command = isWindows
+      ? `pm2 start cmd --name "${name}" -- /c "npm run ${scriptName}"`
+      : `pm2 start npm --name "${name}" -- run ${scriptName}`;
+
+    console.log(`🚀 Spawning instance: ${name}`);
+    runCommand(command, name);
+  }
+}
+
+// Config for all consumers
+const consumers = [
+  {
+    script: "init:kafka:driverConsumerPoolInstance:prod",
+    base: "kafka-driver-pool-consumer-prod",
+    count: 5,
+  },
+  {
+    script: "init:kafka:userDriverRequestInstance:prod",
+    base: "kafka-user-driver-request-consumer-prod",
+    count: 2,
+
+  },
+  {
+    script: "init:kafka:driverAcceptedRides:prod",
+    base: "kafka-driver-accepted-rides-consumer-prod",
+    count: 5,
+  },
+];
+
+// Spawn all consumers
+function spawnAll() {
+  consumers.forEach(({ script, base, count }) =>
+    spawnInstances(script, base, count)
+  );
+}
+
+// First compile TypeScript
 console.log("📦 Compiling TypeScript...");
 exec("npx tsc", (tscErr, tscStdout, tscStderr) => {
   if (tscErr) {
@@ -20,27 +74,6 @@ exec("npx tsc", (tscErr, tscStdout, tscStderr) => {
   console.log("✅ TypeScript compiled successfully.");
   console.log(tscStdout);
 
-  // Now spawn pm2 processes
-  const instanceCount = 5;
-
-  for (let i = 1; i <= instanceCount; i++) {
-    const name = `kafka-driver-pool-consumer-prod-${i}`;
-
-    const command = isWindows
-      ? `pm2 start cmd --name "${name}" -- /c "npm run init:kafka:driver_consumer_pool:prod"`
-      : `pm2 start npm --name '${name}' -- run init:kafka:driver_consumer_pool:prod`;
-
-    console.log(`🚀 Spawning instance: ${name}`);
-    exec(command, (pm2Err, pm2Stdout, pm2Stderr) => {
-      if (pm2Err) {
-        console.error(`❌ Error starting ${name}:`, pm2Err.message);
-        return;
-      }
-      if (pm2Stderr) {
-        console.error(`⚠️ ${name} stderr:`, pm2Stderr);
-        return;
-      }
-      console.log(`✅ ${name} started:\n${pm2Stdout}`);
-    });
-  }
+  // Spawn Kafka consumer groups
+  spawnAll();
 });

@@ -112,6 +112,7 @@ async function findNearbyDrivers(customerLocationInfo:any): Promise<{
 
     const availableDrivers = await findAvailableDriversRecursively(nearbyDrivers, redisClient, customerLocationInfo);    
     return availableDrivers;
+
   } catch (err) {
     console.error("Redis error:", err);
     return [];

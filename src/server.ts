@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { redisClient1, redisClient2 } from './services/redis/redis.index';
 import { CONSOLE_COLORS } from './config/constant';
 import cors from 'cors'
-import { getDriverUniqueSocketCorrelationId } from './config/utils';
+import { getDriverUniqueSocketCorrelationId, togglePartitionByTopic } from './config/utils';
 // import * as dotenv from 'dotenv';
 // dotenv.config({ 
 //   path: process.env.ENV=="development"?'.env.development' : 
@@ -110,19 +110,40 @@ socket1.on(socketEvents.EV_DRIVER_LIVE_LOCATION, async (socket, driverLocation) 
           partition:togglePartition(),
           msg: [JSON.stringify({ ...driverLocation ,correlationId})]
         })     
-});
+  });
 
-socket1.on(socketEvents.EV_DRIVER_LOGGED_OUT, async (socket, driverLocation) => {
+
+  
+
+  // when rides got accepted by driver  
+socket1.on(socketEvents.DRIVER_ACCEPTED_THE_RIDE, async (socket, rideDetailsWithCustomerDriverObject) => {
+  
   const correlationId =getDriverUniqueSocketCorrelationId() ;
   const socketId = socket.id;
    // Store socket.id in Redis with correlationId in db0 of redis
   await redisClient1.set(correlationId, socketId);
   await redisClient1.expire(correlationId, 30); // auto-expire in 30 sec
-  sendToKafka({
-          topic:kafkaEvents.topic.TP_AVAILABLE_DRIVERS_POOL,
-          partition:togglePartition(),
-          msg: [JSON.stringify({ ...driverLocation, correlationId})]
+  
+   sendToKafka({
+          topic:kafkaEvents.topic.TP_DRIVER_ACCEPTED_RIDES,
+          partition:togglePartitionByTopic(kafkaEvents.topic.TP_DRIVER_ACCEPTED_RIDES as "TP_DRIVER_ACCEPTED_RIDES"),
+          msg: [JSON.stringify({ ...rideDetailsWithCustomerDriverObject ,correlationId})]
         })     
-});
+  }
+);
+  
+
+  socket1.on(socketEvents.EV_DRIVER_LOGGED_OUT, async (socket, driverLocation) => {
+    const correlationId =getDriverUniqueSocketCorrelationId() ;
+    const socketId = socket.id;
+    // Store socket.id in Redis with correlationId in db0 of redis
+    await redisClient1.set(correlationId, socketId);
+    await redisClient1.expire(correlationId, 30); // auto-expire in 30 sec
+    sendToKafka({
+            topic:kafkaEvents.topic.TP_AVAILABLE_DRIVERS_POOL,
+            partition:togglePartition(),
+            msg: [JSON.stringify({ ...driverLocation, correlationId})]
+          })     
+  });
 
 socket1.start(Number(port));

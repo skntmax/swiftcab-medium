@@ -15,13 +15,20 @@
     "build:dev": "npx tsc && env-cmd  -f .env.development node ./dist/server.js",
     "build:prod": "npx tsc && env-cmd  -f .env.production node ./dist/server.js ",
     "build:stage": "npx tsc && env-cmd  -f .env.stage node ./dist/server.js",
+    "clean:pm2:all": "pm2 delete all || true && pm2 flush",
     "global:kafka:consumers:dev": "node ./consumer_load_balancer/dev/dev_multi_instance.js",
     "global:kafka:consumers:prod": "node ./consumer_load_balancer/prod/prod_multi_instance.js",
-    "init:kafka:consumer1:dev": "npx tsc && env-cmd  -f .env.development nodemon ./src/consumer_groups/kafka_consumer.ts",
-    "init:kafka:consumer1:prod": "npx tsc && env-cmd  -f .env.production nodemon ./src/consumer_groups/kafka_consumer.ts",
-    "init:kafka:consumer2:dev": "npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer2.js",
-    "init:kafka:driver_consumer_pool:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/driver_pool_consumer.ts",
-    "init:kafka:driver_consumer_pool:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/driver_pool_consumer.js"
+
+    "init:kafka:driverConsumerPoolInstance:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/driver_pool_consumer.ts",
+    "init:kafka:userDriverRequestInstance:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/kafka_consumer.ts",
+    "init:kafka:driverAcceptedRides:dev": "env-cmd -f .env.development nodemon ./src/consumer_groups/driverAcceptRides.ts",
+
+    "init:kafka:driverConsumerPoolInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/driver_pool_consumer.js",
+    "init:kafka:userDriverRequestInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/kafka_consumer.js",
+    "init:kafka:driverAcceptedRides:prod": "env-cmd -f .env.production node ./dist/consumer_groups/driverAcceptRides.js"
+
+    
+
   },
   "keywords": [],
   "author": "",
