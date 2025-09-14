@@ -15,15 +15,15 @@ export const kafkaEvents = {
 
     consumerGroups:{
         CAB_BOOKING:{
-            GRP1:"GRP1",
-            GRP2:"GRP2"
+            GRP1:"CAB_BOOKING-GRP1",
+            GRP2:"CAB_BOOKING-GRP2"
         },
         TP_AVAILABLE_DRIVERS_POOL:{
-            GRP1:"GRP1",
+            GRP1:"TP_AVAILABLE_DRIVERS_POOL-GRP1",
         },
 
         TP_DRIVER_ACCEPTED_RIDES:{
-            GRP1:"GRP1",
+            GRP1:"TP_DRIVER_ACCEPTED_RIDES-GRP1",
         },
         
 

@@ -23,3 +23,6 @@ export const kafkaEvents = {
     "init:kafka:consumer2:dev": "npx tsc && env-cmd  -f .env.development node ./dist/consumer_groups/kafka_consumer2.js",
     "init:kafka:driver_consumer_pool:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/driver_pool_consumer.ts",
     "init:kafka:driver_consumer_pool:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/driver_pool_consumer.js" 
+
+
+    

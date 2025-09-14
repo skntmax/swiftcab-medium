@@ -9,7 +9,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { redisClient1, redisClient2 } from './services/redis/redis.index';
 import { CONSOLE_COLORS } from './config/constant';
 import cors from 'cors'
-import { getDriverUniqueSocketCorrelationId, togglePartitionByTopic } from './config/utils';
+import { getCustomerUniqueSocketCorrelationId, getDriverUniqueSocketCorrelationId, togglePartition, togglePartitionByTopic } from './config/utils';
+import { intiQueueConsumers } from './services/queues/queueConsumers';
+import drivercustomer from './services/queryServices/drivercustomer.service';
 // import * as dotenv from 'dotenv';
 // dotenv.config({ 
 //   path: process.env.ENV=="development"?'.env.development' : 
@@ -20,9 +22,11 @@ export let app = Express();
 let port = env.PORT || 6000;
 let kafkaHost = env.KAFKA_HOST || "localhost:9092";
 
-function togglePartition() {
-  return  Math.floor(Math.random() * kafkaEvents.PARTITIONS.TP_AVAILABLE_DRIVERS_POOL);
-}
+
+intiQueueConsumers() // intitate all conusmers of bullMQ 
+
+
+
 
 export const socket1 = new SocketServer();
 
@@ -61,7 +65,7 @@ app.use(cors({
 //  intialised by  customer only 
 socket1.on(socketEvents.CAB_BOOK, async (socket, data) => {
   // setTimeout(()=> socket.emit(socketEvents.CAB_BOOKED,{data:{driverName:"narendra"}}) , 5000  ) 
-  const correlationId = uuidv4();
+  const correlationId = getCustomerUniqueSocketCorrelationId();
   const socketId = socket.id;
    // Store socket.id in Redis with correlationId in db0 of redis
   await redisClient1.set(correlationId, socketId);
@@ -117,7 +121,7 @@ socket1.on(socketEvents.EV_DRIVER_LIVE_LOCATION, async (socket, driverLocation) 
 
   // when rides got accepted by driver  
 socket1.on(socketEvents.DRIVER_ACCEPTED_THE_RIDE, async (socket, rideDetailsWithCustomerDriverObject) => {
-  
+  console.log("listening",socketEvents.DRIVER_ACCEPTED_THE_RIDE)
   const correlationId =getDriverUniqueSocketCorrelationId() ;
   const socketId = socket.id;
    // Store socket.id in Redis with correlationId in db0 of redis

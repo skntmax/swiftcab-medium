@@ -76,7 +76,6 @@ model driver_profile {
   driver                                         Int         @unique
   created_on                                     DateTime    @default(now())
   updated_on                                     DateTime    @default(now())
-  is_varified                                    Boolean?
   comment                                        String?
   engaged                                        Boolean?    @default(false)
   engaged_with_owner                             Int?        @unique
@@ -84,10 +83,13 @@ model driver_profile {
   ifsc                                           String?
   is_bank_varified                               Boolean?    @default(false)
   wallet_balance                                 Int?        @default(0)
-  wallet_code                                    String?     @unique
+  wallet_code                                    String?
   profile_pic                                    String?
   bank_account                                   Int
   bank_account_branch                            Int
+  bank_account_no                                BigInt?     @unique
+  passbook                                       String?
+  is_varified                                    KycStatus   @default(INITIATED)
   bank_branch                                    bank_branch @relation(fields: [bank_account_branch], references: [id])
   banks                                          banks       @relation(fields: [bank_account], references: [id])
   users_driver_profile_driverTousers             users       @relation("driver_profile_driverTousers", fields: [driver], references: [id])
@@ -126,6 +128,7 @@ model nav_items {
   icon                       String?
   created_on                 DateTime                     @default(now())
   updated_on                 DateTime
+  is_active                  Boolean                      @default(true)
   nav_has_permission_by_role nav_has_permission_by_role[]
   sub_nav_items              sub_nav_items[]
 }
@@ -139,11 +142,17 @@ model owner_has_vhicles {
 }
 
 model permissions {
-  id                   Int                    @id @default(autoincrement())
-  permission_name      String
-  created_on           DateTime               @default(now())
-  updated_on           DateTime
-  role_has_permissions role_has_permissions[]
+  id                            Int                             @id @default(autoincrement())
+  permission_name               String
+  created_on                    DateTime                        @default(now())
+  updated_on                    DateTime
+  permission_identifer          String?
+  is_active                     Boolean                         @default(true)
+  capabilities_have_permissions capabilities_have_permissions[]
+  role_has_permissions          role_has_permissions[]
+  sub_nav_items                 sub_nav_items?
+
+  @@unique([permission_name, permission_identifer])
 }
 
 model role_has_permissions {
@@ -157,13 +166,19 @@ model role_has_permissions {
 }
 
 model roles {
-  id                         Int                          @id @default(autoincrement())
-  name                       String
-  created_on                 DateTime                     @default(now())
-  updated_on                 DateTime
-  nav_has_permission_by_role nav_has_permission_by_role[]
-  role_has_permissions       role_has_permissions[]
-  user_has_roles             user_has_roles[]
+  id                            Int                             @id @default(autoincrement())
+  name                          String
+  created_on                    DateTime                        @default(now())
+  updated_on                    DateTime
+  is_active                     Boolean                         @default(true)
+  label                         String?
+  capabilities                  capabilities[]
+  capabilities_have_permissions capabilities_have_permissions[]
+  nav_has_permission_by_role    nav_has_permission_by_role[]
+  role_has_permissions          role_has_permissions[]
+  user_has_roles                user_has_roles[]
+
+  @@unique([name, label])
 }
 
 model services_have_utils {
@@ -178,16 +193,14 @@ model services_have_utils {
 }
 
 model shc_have_localities {
-  shc_id                                                             Int
-  locality_id                                                        Int
-  created_on                                                         DateTime           @default(now())
-  updated_on                                                         DateTime
-  id                                                                 Int                @id @default(autoincrement())
-  price_per_km                                                       Int
-  localities                                                         localities         @relation(fields: [locality_id], references: [id])
-  states_have_cities                                                 states_have_cities @relation(fields: [shc_id], references: [id])
-  users_have_rides_users_have_rides_destinationToshc_have_localities users_have_rides[] @relation("users_have_rides_destinationToshc_have_localities")
-  users_have_rides_users_have_rides_sourceToshc_have_localities      users_have_rides[] @relation("users_have_rides_sourceToshc_have_localities")
+  shc_id             Int
+  locality_id        Int
+  created_on         DateTime           @default(now())
+  updated_on         DateTime
+  id                 Int                @id @default(autoincrement())
+  price_per_km       Int
+  localities         localities         @relation(fields: [locality_id], references: [id])
+  states_have_cities states_have_cities @relation(fields: [shc_id], references: [id])
 }
 
 model states {
@@ -213,16 +226,19 @@ model states_have_cities {
 }
 
 model sub_nav_items {
-  id           Int       @id @default(autoincrement())
-  sub_nav_item String?
-  sub_menu     Boolean   @default(false)
-  href         String?
-  icon         String?
-  nav_item_id  Int
-  created_on   DateTime  @default(now())
-  updated_on   DateTime
-  is_active    Boolean   @default(true)
-  nav_items    nav_items @relation(fields: [nav_item_id], references: [id])
+  id            Int          @id @default(autoincrement())
+  sub_nav_item  String?
+  sub_menu      Boolean      @default(false)
+  href          String?
+  icon          String?
+  nav_item_id   Int
+  created_on    DateTime     @default(now())
+  updated_on    DateTime
+  is_active     Boolean      @default(true)
+  permission_id Int?         @unique
+  extra_paths   String       @default("[]")
+  nav_items     nav_items    @relation(fields: [nav_item_id], references: [id])
+  permissions   permissions? @relation(fields: [permission_id], references: [id])
 }
 
 model travel_ways {
@@ -292,40 +308,38 @@ model users {
 }
 
 model users_have_rides {
-  id                                                                    Int                     @id @default(autoincrement())
-  pickup_time                                                           DateTime?
-  drop_time                                                             DateTime?
-  distance                                                              String?
-  user_id                                                               Int
-  source                                                                Int
-  destination                                                           Int
-  is_active                                                             Boolean                 @default(false)
-  created_on                                                            DateTime                @default(now())
-  updated_on                                                            DateTime
-  is_food                                                               Int
-  is_guide                                                              Int
-  is_water                                                              Int
-  destination_lat                                                       Float?
-  destination_lng                                                       Float?
-  destination_name                                                      String?
-  pickup_date                                                           DateTime?
-  return_date                                                           DateTime?
-  source_lat                                                            Float?
-  source_lng                                                            Float?
-  source_name                                                           String?
-  travel_way                                                            Int
-  is_running                                                            Boolean                 @default(false)
-  payment_method                                                        payMethod               @default(CASH)
-  total_fare                                                            Int
-  vhicle_driver                                                         Int                     @unique
-  shc_have_localities_users_have_rides_destinationToshc_have_localities shc_have_localities     @relation("users_have_rides_destinationToshc_have_localities", fields: [destination], references: [id])
-  utils_config_users_have_rides_is_foodToutils_config                   utils_config            @relation("users_have_rides_is_foodToutils_config", fields: [is_food], references: [id])
-  utils_config_users_have_rides_is_guideToutils_config                  utils_config            @relation("users_have_rides_is_guideToutils_config", fields: [is_guide], references: [id])
-  utils_config_users_have_rides_is_waterToutils_config                  utils_config            @relation("users_have_rides_is_waterToutils_config", fields: [is_water], references: [id])
-  shc_have_localities_users_have_rides_sourceToshc_have_localities      shc_have_localities     @relation("users_have_rides_sourceToshc_have_localities", fields: [source], references: [id])
-  travel_ways                                                           travel_ways             @relation(fields: [travel_way], references: [id])
-  users                                                                 users                   @relation(fields: [user_id], references: [id])
-  driver_belongs_to_owner                                               driver_belongs_to_owner @relation(fields: [vhicle_driver], references: [id])
+  id                                                   Int                     @id @default(autoincrement())
+  pickup_time                                          DateTime?
+  drop_time                                            DateTime?
+  distance                                             String?
+  user_id                                              Int
+  is_active                                            Boolean                 @default(false)
+  created_on                                           DateTime                @default(now())
+  updated_on                                           DateTime
+  is_food                                              Int
+  is_guide                                             Int
+  is_water                                             Int
+  destination_lat                                      Float?
+  destination_lng                                      Float?
+  destination_name                                     String?
+  pickup_date                                          DateTime?
+  return_date                                          DateTime?
+  source_lat                                           Float?
+  source_lng                                           Float?
+  source_name                                          String?
+  travel_way                                           Int
+  payment_method                                       payMethod               @default(CASH)
+  total_fare                                           Int
+  vhicle_driver                                        Int                     @unique
+  otp                                                  Int?
+  otp_varified                                         Boolean                 @default(false)
+  ride_started                                         Boolean                 @default(false)
+  utils_config_users_have_rides_is_foodToutils_config  utils_config            @relation("users_have_rides_is_foodToutils_config", fields: [is_food], references: [id])
+  utils_config_users_have_rides_is_guideToutils_config utils_config            @relation("users_have_rides_is_guideToutils_config", fields: [is_guide], references: [id])
+  utils_config_users_have_rides_is_waterToutils_config utils_config            @relation("users_have_rides_is_waterToutils_config", fields: [is_water], references: [id])
+  travel_ways                                          travel_ways             @relation(fields: [travel_way], references: [id])
+  users                                                users                   @relation(fields: [user_id], references: [id])
+  driver_belongs_to_owner                              driver_belongs_to_owner @relation(fields: [vhicle_driver], references: [id])
 }
 
 model utils_config {
@@ -420,6 +434,31 @@ model vhicle_services {
   updated_on               DateTime
   services_have_utils      services_have_utils[]
   vhicle_provides_services vhicle_provides_services[]
+}
+
+model capabilities {
+  id                    Int      @id @default(autoincrement())
+  capability_name       String
+  role_id               Int
+  created_on            DateTime @default(now())
+  updated_on            DateTime
+  capability_identifier String?
+  is_active             Boolean  @default(true)
+  roles                 roles    @relation(fields: [role_id], references: [id])
+
+  @@unique([capability_name, capability_identifier])
+}
+
+model capabilities_have_permissions {
+  id            Int         @id @default(autoincrement())
+  capability_id Int
+  permission_id Int
+  created_on    DateTime    @default(now())
+  updated_on    DateTime
+  roles         roles       @relation(fields: [capability_id], references: [id])
+  permissions   permissions @relation(fields: [permission_id], references: [id])
+
+  @@unique([capability_id, permission_id])
 }
 
 enum KycStatus {

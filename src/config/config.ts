@@ -15,7 +15,7 @@ const config =  {
         db:0 
       },
 
-      redisConnection2: { // be default 
+      redisConnection2: { // for driverAcceptedRides , and variftyOtp on medium service   
         host: "localhost",
         port: Number(env.REDIS_PORT) ,
         db:1

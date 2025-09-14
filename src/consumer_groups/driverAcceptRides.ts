@@ -3,9 +3,10 @@ import { kafkaEvents } from "../config/kafkaEvent";
 import { Emitter } from "@socket.io/redis-emitter";
 import config from "../config/config";
 import { RedisConn } from "../services/redis/redis.index";
-import { GOE_HASH_KEYS } from "../config/constant";
+import { GOE_HASH_KEYS, REDIS_QUEUES } from "../config/constant";
+import { driverAcceptedRides } from "../services/queues";
 
-const uniqueClientId = `swift-cab-medium-${Math.random().toString(36).substring(7)}`;
+const uniqueClientId = `swift-cab-medium-${kafkaEvents.topic.TP_DRIVER_ACCEPTED_RIDES}-${Math.random().toString(36).substring(7)}`;
 const KAFKA_HOST = process.env.KAFKA_HOST || "localhost:9092";
 
 const redisClient = new RedisConn(config.redisConn.redisConnection1).redisClient;
@@ -27,8 +28,9 @@ async function init() {
     await kafka.startBatchConsumer(async (msg: string) => {
       try {
         const rideDetailsWithCustomerDriverObject = JSON.parse(msg);  // Parse Kafka message
-
-        console.log("rideDetailsWithCustomerDriverObject>>", rideDetailsWithCustomerDriverObject)
+ 
+        driverAcceptedRides.enqueue(REDIS_QUEUES.DRIVER_ACCEPTED_RIDES ,rideDetailsWithCustomerDriverObject)
+        // console.log("rideDetailsWithCustomerDriverObject>>", rideDetailsWithCustomerDriverObject)
         
       } catch (err) {
         console.error("❌ Error processing Kafka message:", err);

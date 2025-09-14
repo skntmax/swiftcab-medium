@@ -16,24 +16,18 @@
     "build:prod": "npx tsc && env-cmd  -f .env.production node ./dist/server.js ",
     "build:stage": "npx tsc && env-cmd  -f .env.stage node ./dist/server.js",
     "clean:pm2:all": "pm2 delete all || true && pm2 flush",
-    
     "global:kafka:consumers:dev:spawn": "node ./consumer_load_balancer/dev/dev_multi_instance.js spawn",
     "global:kafka:consumers:dev:remove": "node ./consumer_load_balancer/dev/dev_multi_instance.js remove",
     "global:kafka:consumers:dev:restart": "node ./consumer_load_balancer/dev/dev_multi_instance.js restart",
-    
     "global:kafka:consumers:prod:spawn": "node ./consumer_load_balancer/prod/prod_multi_instance.js spawn",
     "global:kafka:consumers:prod:remove": "node ./consumer_load_balancer/prod/prod_multi_instance.js remove",
     "global:kafka:consumers:prod:restart": "node ./consumer_load_balancer/prod/prod_multi_instance.js restart",
-
     "init:kafka:driverConsumerPoolInstance:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/driver_pool_consumer.ts",
     "init:kafka:userDriverRequestInstance:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/kafka_consumer.ts",
     "init:kafka:driverAcceptedRides:dev": "env-cmd -f .env.development nodemon ./src/consumer_groups/driverAcceptRides.ts",
-
     "init:kafka:driverConsumerPoolInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/driver_pool_consumer.js",
     "init:kafka:userDriverRequestInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/kafka_consumer.js",
     "init:kafka:driverAcceptedRides:prod": "env-cmd -f .env.production node ./dist/consumer_groups/driverAcceptRides.js"
-
-  
   },
   "keywords": [],
   "author": "",
@@ -46,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/redis": "^4.0.11",
     "@types/uuid": "^10.0.0",
+    "bullmq": "^5.58.5",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "env-cmd": "^10.1.0",

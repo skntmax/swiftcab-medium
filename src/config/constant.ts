@@ -47,8 +47,8 @@ export const REDIS_KEYS  = {
 
 
 export const REDIS_QUEUES  = {
-    USER_SIGNUP:"USER_SIGNUP", // for user login and singup 
-    USERS_OTP:"USERS_OTP",     //  for  users otp service 
+    DRIVER_ACCEPTED_RIDES:"DRIVER_ACCEPTED_RIDES", // drivers who have accepted rides 
+    VARIFY_OTP:"VARIFY_OTP", // customer or user who is willing to intiated ride  
 }
 
 

@@ -5,7 +5,7 @@ import config from "../config/config";
 import { RedisConn } from "../services/redis/redis.index";
 import { GOE_HASH_KEYS } from "../config/constant";
 
-const uniqueClientId = `swift-cab-medium-${Math.random().toString(36).substring(7)}`;
+const uniqueClientId = `swift-cab-medium-${kafkaEvents.topic.TP_AVAILABLE_DRIVERS_POOL}-${Math.random().toString(36).substring(7)}`;
 const KAFKA_HOST = process.env.KAFKA_HOST || "localhost:9092";
 
 const redisClient = new RedisConn(config.redisConn.redisConnection1).redisClient;
