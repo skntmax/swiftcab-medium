@@ -4,8 +4,8 @@ import config from '../../../config/config';
 import drivercustomer from '../../queryServices/drivercustomer.service';
 
 export function driveAcceptedRidesConsumeTasks() {
-   
-const myWorker = new Worker(REDIS_QUEUES.DRIVER_ACCEPTED_RIDES, async (job) => {
+ console.log(">> queue consumer driveAcceptedRidesConsumeTasks started ") 
+  const myWorker = new Worker(REDIS_QUEUES.DRIVER_ACCEPTED_RIDES, async (job) => {
     console.log('Processing job:', job.id);
     let parsedData =  JSON.parse(job?.data) 
     await drivercustomer.getDriverConsetAndIntiateRide(parsedData)

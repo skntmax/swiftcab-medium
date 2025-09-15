@@ -16,18 +16,35 @@
     "build:prod": "npx tsc && env-cmd  -f .env.production node ./dist/server.js ",
     "build:stage": "npx tsc && env-cmd  -f .env.stage node ./dist/server.js",
     "clean:pm2:all": "pm2 delete all || true && pm2 flush",
-    "global:kafka:consumers:dev:spawn": "node ./consumer_load_balancer/dev/dev_multi_instance.js spawn",
-    "global:kafka:consumers:dev:remove": "node ./consumer_load_balancer/dev/dev_multi_instance.js remove",
-    "global:kafka:consumers:dev:restart": "node ./consumer_load_balancer/dev/dev_multi_instance.js restart",
-    "global:kafka:consumers:prod:spawn": "node ./consumer_load_balancer/prod/prod_multi_instance.js spawn",
-    "global:kafka:consumers:prod:remove": "node ./consumer_load_balancer/prod/prod_multi_instance.js remove",
-    "global:kafka:consumers:prod:restart": "node ./consumer_load_balancer/prod/prod_multi_instance.js restart",
+    
+    "global:kafka:redisqueue:consumers:dev:spawn": "node ./consumer_load_balancer/dev/dev_multi_instance.js spawn",
+    "global:kafka:redisqueue:consumers:dev:remove": "node ./consumer_load_balancer/dev/dev_multi_instance.js remove",
+    "global:kafka:redisqueue:consumers:dev:restart": "node ./consumer_load_balancer/dev/dev_multi_instance.js restart",
+    
+    "global:kafka:redisqueue:consumers:prod:spawn": "node ./consumer_load_balancer/prod/prod_multi_instance.js spawn",
+    "global:kafka:redisqueue:consumers:prod:remove": "node ./consumer_load_balancer/prod/prod_multi_instance.js remove",
+    "global:kafka:redisqueue:consumers:prod:restart": "node ./consumer_load_balancer/prod/prod_multi_instance.js restart",
+     
+    "global:redis:consumers:dev:spawn": "node ./consumer_load_balancer/dev/redis_consumers/redis_consumer_multi_instance.js spawn",
+    "global:redis:consumers:dev:remove": "node ./consumer_load_balancer/dev/redis_consumers/redis_consumer_multi_instance.js remove",
+    "global:redis:consumers:dev:restart": "node ./consumer_load_balancer/dev/redis_consumers/redis_consumer_multi_instance.js restart",
+    
+    "global:redis:consumers:prod:spawn": "node ./consumer_load_balancer/prod/redis_consumers/redis_consumer_multi_instance.js spawn",
+    "global:redis:consumers:prod:remove": "node ./consumer_load_balancer/prod/redis_consumers/redis_consumer_multi_instance.js remove",
+    "global:redis:consumers:prod:restart": "node ./consumer_load_balancer/prod/redis_consumers/redis_consumer_multi_instance.js restart",
+    
+
     "init:kafka:driverConsumerPoolInstance:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/driver_pool_consumer.ts",
     "init:kafka:userDriverRequestInstance:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/kafka_consumer.ts",
     "init:kafka:driverAcceptedRides:dev": "env-cmd -f .env.development nodemon ./src/consumer_groups/driverAcceptRides.ts",
+    
     "init:kafka:driverConsumerPoolInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/driver_pool_consumer.js",
     "init:kafka:userDriverRequestInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/kafka_consumer.js",
-    "init:kafka:driverAcceptedRides:prod": "env-cmd -f .env.production node ./dist/consumer_groups/driverAcceptRides.js"
+    "init:kafka:driverAcceptedRides:prod": "env-cmd -f .env.production node ./dist/consumer_groups/driverAcceptRides.js",
+
+    "init:redis:acceptedRideUpdateByDriver:dev": "env-cmd  -f .env.development nodemon  ./src/services/queues/queueConsumers/index.ts ",
+    
+    "init:redis:acceptedRideUpdateByDriver:prod": "env-cmd -f .env.production node ./dist/services/queues/redisConsumers/acceptedRideUpdateByDriver.js"
   },
   "keywords": [],
   "author": "",

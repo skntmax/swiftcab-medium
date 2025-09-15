@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 const path = require("path");
-const { spawnAll, killAll, restartAll } = require("./../runner");
-const configs = require("./../pm2config.js").dev;
+const { spawnAll, killAll, restartAll } = require("../runner.js");
+const configs = require("../pm2config.js").dev;
 const { exec } = require("child_process");
 dotenv.config({ path: path.resolve(__dirname, "./../.env.development") });
 

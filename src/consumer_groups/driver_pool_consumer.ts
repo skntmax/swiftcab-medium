@@ -66,6 +66,12 @@ async function init() {
           }
         );
 
+           await redisClient.expire(
+          `driver:${driverUsername}:meta`, // meta of this username 
+            60*5 // valid u to 5 minutes
+         );
+
+
         console.log("✅ Received and saved Kafka message:", driverData);
         }
        

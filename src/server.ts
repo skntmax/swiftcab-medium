@@ -10,7 +10,7 @@ import { redisClient1, redisClient2 } from './services/redis/redis.index';
 import { CONSOLE_COLORS } from './config/constant';
 import cors from 'cors'
 import { getCustomerUniqueSocketCorrelationId, getDriverUniqueSocketCorrelationId, togglePartition, togglePartitionByTopic } from './config/utils';
-import { intiQueueConsumers } from './services/queues/queueConsumers';
+// import { intiQueueConsumers } from './services/queues/queueConsumers';
 import drivercustomer from './services/queryServices/drivercustomer.service';
 // import * as dotenv from 'dotenv';
 // dotenv.config({ 
@@ -23,7 +23,7 @@ let port = env.PORT || 6000;
 let kafkaHost = env.KAFKA_HOST || "localhost:9092";
 
 
-intiQueueConsumers() // intitate all conusmers of bullMQ 
+// intiQueueConsumers() // intitate all conusmers of bullMQ 
 
 
 

@@ -3,3 +3,5 @@ import { driveAcceptedRidesConsumeTasks } from "./driver_accepted_rides_queue_co
 export function intiQueueConsumers() {
      driveAcceptedRidesConsumeTasks() // consumer who have accepted customer rides  
 }
+
+intiQueueConsumers()

@@ -92,6 +92,7 @@ const drivercustomer = {
       });
 
       const customerSocketId = await redisClient.get(customerView.correlationId);
+      console.log("customerSocketId", customerSocketId)
       if (customerSocketId) {
         emitter.to(customerSocketId).emit(socketEvents.RIDE_INTIATED_BY_DRIVER, {
           rideId: newRide.id,
