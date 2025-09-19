@@ -24,7 +24,7 @@ async function spawnInstances(scriptName, baseName, ports) {
     const name = `${baseName}-${i+1}-${ports[i]}`;
     const command = isWindows
       ? `set PORT=${ports[i]} && pm2 start cmd --name "${name}" -- /c "npm run ${scriptName}"`
-      : `set PORT=${ports[i]} && pm2 start npm --name "${name}" -- run ${scriptName}`;
+      : `PORT=${ports[i]} && pm2 start npm --name "${name}" -- run ${scriptName}`;
 
     console.log(`🚀 Spawning instance: ${name}`);
     await Promise.resolve(()=>{ setTimeout(()=>{},3000)})
