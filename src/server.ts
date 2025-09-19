@@ -23,9 +23,8 @@ let port = env.PORT || 6000;
 let kafkaHost = env.KAFKA_HOST || "localhost:9092";
 
 
+console.log("assigned port>>" , port )
 // intiQueueConsumers() // intitate all conusmers of bullMQ 
-
-
 
 
 export const socket1 = new SocketServer();

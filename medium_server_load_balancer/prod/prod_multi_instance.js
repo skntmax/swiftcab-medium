@@ -4,12 +4,19 @@ const path = require("path");
 const { spawnAll, killAll, restartAll } = require("../runner.js");
 const configs = require("../pm2config.js").prod;
 const { exec } = require("child_process");
-dotenv.config({ path: path.resolve(__dirname, "./../.env.production") });
+dotenv.config({ path: path.resolve(__dirname, "./../../.env.production") });
 
 const action = process.argv[2] || "spawn"; // default action: spawn
 
 console.log(`🌍 Environment: PROD`);
 console.log(`⚡ Action: ${action}`);
+
+
+let Ports = process.env.PORT.includes(",") ? process.env.PORT.split(","): [process.env.PORT]  
+configs.forEach((ele)=>{
+   ele.ports = Ports 
+}) // appending ports 
+
 
 switch (action) {
   case "spawn":

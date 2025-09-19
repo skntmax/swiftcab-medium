@@ -4,6 +4,7 @@ import { Emitter } from "@socket.io/redis-emitter";
 import config from "../config/config";
 import { RedisConn } from "../services/redis/redis.index";
 import { GOE_HASH_KEYS } from "../config/constant";
+import { driverPoolInterface } from "../types/interface/driverPool";
 
 const uniqueClientId = `swift-cab-medium-${kafkaEvents.topic.TP_AVAILABLE_DRIVERS_POOL}-${Math.random().toString(36).substring(7)}`;
 const KAFKA_HOST = process.env.KAFKA_HOST || "localhost:9092";
@@ -27,14 +28,16 @@ async function init() {
     await kafka.startBatchConsumer(async (msg: string) => {
       try {
         const driverData = JSON.parse(msg);  // Parse Kafka message
-      const {  lat, lng, driver:driverUsername, isAvailable, timestamp ,correlationId } = driverData;
+        const {  lat, lng, driver:driverUsername, isAvailable, timestamp ,correlationId } = driverData;
         // const GEO_KEY = `driver:${driverUsername}:geo`; // geo of this driver 
         const GEO_KEY = GOE_HASH_KEYS.NOIDA_GEO_HASH; // geo of this driver 
         
 
         console.log("driverData>>", driverData)
+        const dexists = await redisClient.exists(`driver:${driverUsername}:meta`) 
+        console.log("dexists>>", dexists)
         // if driver is not logged in then remove from redis
-        if(!driverData?.isLoggedIn) {
+        if(!driverData?.isLoggedIn) { 
         // Remove driver from GEO set
         await redisClient.zrem(GEO_KEY, driverUsername);
 
@@ -54,9 +57,17 @@ async function init() {
           driverUsername    // member name
         );
 
-        // Store driver's metadata in a separate hash
-        await redisClient.hset(
-          `driver:${driverUsername}:meta`, // meta of this username 
+        let isAvailable = false 
+        const key = `driver:${driverUsername}:meta`;
+        // Check if the key already exists
+        const exists = await redisClient.exists(key) ; // in case , driver is already assigned 
+
+        // If key does not exist → force isAvailable = true
+        if (!exists) {
+          isAvailable = true;
+           // Store driver's metadata in a separate hash
+          await redisClient.hset(
+          key, // meta of this username 
           {
             lat: lat.toString(),
             lng: lng.toString(),
@@ -65,6 +76,24 @@ async function init() {
             correlationId // driver socket id 
           }
         );
+        }else{
+
+          let avalialbelDriverisAvailableStatus =await  redisClient.hget(key, "isAvailable")
+
+           // Store driver's metadata in a separate hash
+          await redisClient.hset(
+            key, // meta of this username 
+            {
+              lat: lat.toString(),
+              lng: lng.toString(),
+              isAvailable: avalialbelDriverisAvailableStatus,
+              timestamp,
+              correlationId // driver socket id 
+            }
+          );
+
+        }
+
 
            await redisClient.expire(
           `driver:${driverUsername}:meta`, // meta of this username 

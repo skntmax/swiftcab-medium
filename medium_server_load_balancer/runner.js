@@ -2,6 +2,7 @@ const { exec } = require("child_process");
 const os = require("os");
 const isWindows = os.platform() === "win32";
 
+
 // Utility to run shell commands
 function runCommand(command, name) {
   exec(command, (err, stdout, stderr) => {
@@ -18,22 +19,22 @@ function runCommand(command, name) {
 }
 
 // Spawn pm2 processes
-async function spawnInstances(scriptName, baseName, count) {
-  for (let i = 1; i <= count; i++) {
-    const name = `${baseName}-${i}`;
+async function spawnInstances(scriptName, baseName, ports) {
+  for (let i = 0; i < ports.length; i++) {
+    const name = `${baseName}-${i+1}`;
     const command = isWindows
-      ? `pm2 start cmd --name "${name}" -- /c "npm run ${scriptName}"`
-      : `pm2 start npm --name "${name}" -- run ${scriptName}`;
+      ? `set PORT=${ports[i]} && pm2 start cmd --name "${name}" -- /c "npm run ${scriptName}"`
+      : `set PORT=${ports[i]} && pm2 start npm --name "${name}" -- run ${scriptName}`;
 
-  console.log(`🚀 Spawning instance: ${name}`);
-  await Promise.resolve(()=>{ setTimeout(()=>{},3000)}) // wait for atleast 3 minutes before spawning new instance 
-    runCommand(command, name)
+    console.log(`🚀 Spawning instance: ${name}`);
+    await Promise.resolve(()=>{ setTimeout(()=>{},3000)})
+    runCommand(command, name);
   }
 }
 
 async function spawnAll(consumers) {
-  consumers.forEach(({ script, base, count }) =>
-    spawnInstances(script, base, count)
+  consumers.forEach(({ script, base,ports }) =>
+    spawnInstances(script, base, ports)
   );
 }
 

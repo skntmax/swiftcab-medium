@@ -15,9 +15,6 @@ const drivercustomer = {
       const customer = driverCustomerRideData.userDetails;
       const customerView = driverCustomerRideData.customerViewDetails;
       const driver = driverCustomerRideData.driverDetails;
-
-
-
       
       // Step 1: Find driver in DB
       const driverObj = await prismaClient.driver_belongs_to_owner.findFirst({
@@ -72,13 +69,7 @@ const drivercustomer = {
       const { lat, lng, timestamp, correlationId } = driver?.meta || {};
 
       if (driverUsername) {
-        await redisClient1.hset(`driver:${driverUsername}:meta`, {
-          lat: lat?.toString() || "",
-          lng: lng?.toString() || "",
-          isAvailable: "false",
-          timestamp: timestamp || new Date().toISOString(),
-          correlationId: correlationId || driverCustomerRideData.correlationId,
-        });
+        await redisClient1.hset(`driver:${driverUsername}:meta`, "isAvailable", "false"); // mark the driver isAvailable false 
       }
 
       // send socket event to customer or user , that driver has accepter their  ride request 
@@ -92,15 +83,18 @@ const drivercustomer = {
       });
 
       const customerSocketId = await redisClient.get(customerView.correlationId);
+      const driverSocketId = await redisClient.get(driverCustomerRideData?.correlationId);
       console.log("customerSocketId", customerSocketId)
-      if (customerSocketId) {
-        emitter.to(customerSocketId).emit(socketEvents.RIDE_INTIATED_BY_DRIVER, {
+      console.log("driverSocketId", driverSocketId)
+    
+      if (customerSocketId && driverSocketId) {
+        const ridePayload = {
           rideId: newRide.id,
           message: "Your ride has been initiated!",
           driver: {
             username: driver?.username,
             id: driverObj.id,
-            ...driverUserObj
+            ...driverUserObj,
           },
           pickup: {
             lat: newRide.source_lat,
@@ -113,12 +107,15 @@ const drivercustomer = {
             name: newRide.destination_name,
           },
           otp: newRide.otp,
-        });
+        };
 
-        console.log(
-          `📡 Event "ride:initiated" sent to user (correlationId: ${customerSocketId})`
-        );
+        // Send to customer
+        emitter.to(customerSocketId).emit(socketEvents.RIDE_INTIATED_BY_DRIVER, ridePayload);
+
+        // Send to driver
+        emitter.to(driverSocketId).emit(socketEvents.RIDE_INTIATED_BY_DRIVER, ridePayload);
       }
+
           
       return newRide;
     } catch (err) {

@@ -7,6 +7,7 @@ const env = {
     KAFKA_HOST:process.env.KAFKA_HOST as string
 }
 
+console.log(env)
 Object.freeze(env)
 export {env} 
 

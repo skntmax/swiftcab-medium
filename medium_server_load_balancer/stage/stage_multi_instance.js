@@ -1,14 +1,13 @@
-
 const dotenv = require("dotenv");
 const path = require("path");
 const { spawnAll, killAll, restartAll } = require("../runner.js");
-const configs = require("../pm2config.js").prod;
+const configs = require("../pm2config.js").stage;
 const { exec } = require("child_process");
-dotenv.config({ path: path.resolve(__dirname, "./../.env.production") });
+dotenv.config({ path: path.resolve(__dirname, "./../.env.development") });
 
 const action = process.argv[2] || "spawn"; // default action: spawn
 
-console.log(`🌍 Environment: PROD`);
+console.log(`🌍 Environment: stage`);
 console.log(`⚡ Action: ${action}`);
 
 switch (action) {
