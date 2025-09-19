@@ -59,8 +59,8 @@
     "init:kafka:userDriverRequestInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/kafka_consumer.js",
     "init:kafka:driverAcceptedRides:prod": "env-cmd -f .env.production node ./dist/consumer_groups/driverAcceptRides.js",
 
-    "init:redis:acceptedRideUpdateByDriver:dev": "env-cmd  -f .env.development nodemon  ./src/services/queues/queueConsumers/index.ts ",
-    "init:redis:acceptedRideUpdateByDriver:prod": "env-cmd -f .env.production node ./dist/services/queues/redisConsumers/acceptedRideUpdateByDriver.js"
+    "init:redis:acceptedRideUpdateByDriver:dev": "env-cmd  -f .env.development nodemon  ./src/services/queues/queueConsumers/index.ts",
+    "init:redis:acceptedRideUpdateByDriver:prod": "env-cmd -f .env.production node ./dist/services/queues/queueConsumers/index.js"
   },
   "keywords": [],
   "author": "",
