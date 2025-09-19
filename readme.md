@@ -26,3 +26,24 @@ export const kafkaEvents = {
 
 
     
+
+    Open Command Prompt (cmd) or PowerShell and run:
+
+    netstat -ano | findstr :7001
+
+
+    You’ll get something like:
+
+    TCP    0.0.0.0:7001       0.0.0.0:0       LISTENING       12345
+
+
+    👉 The last number (12345) is the PID (Process ID).
+
+    🔨 Step 2: Kill the process
+
+    Run:
+
+    taskkill /PID 12345 /F
+
+
+    Replace 12345 with the PID you found.

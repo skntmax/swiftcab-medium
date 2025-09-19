@@ -12,53 +12,40 @@
     "prisma:db:generate:dev": "env-cmd  -f .env.development -- npx prisma generate && npx tsc",
     "prisma:db:pull:prod": "env-cmd  -f .env.production -- npx prisma db pull && npx tsc",
     "prisma:db:generate:prod": "env-cmd  -f .env.production -- npx prisma generate && npx tsc",
-    
-    "global:medium:dev:server:spawn" :"node ./medium_server_load_balancer/dev/dev_multi_instance.js spawn " ,
-    "global:medium:dev:server:remove" :"node ./medium_server_load_balancer/dev/dev_multi_instance.js remove " ,
-    "global:medium:dev:server:restart" :"node ./medium_server_load_balancer/dev/dev_multi_instance.js restart " ,
-    
-    "global:medium:prod:server:spawn" :"node ./medium_server_load_balancer/prod/prod_multi_instance.js spawn "   , 
-    "global:medium:prod:server:remove" :"node ./medium_server_load_balancer/prod/prod_multi_instance.js remove "   , 
-    "global:medium:prod:server:restart" :"node ./medium_server_load_balancer/prod/prod_multi_instance.js restart "   , 
-
-    "global:medium:stage:server:spawn" :"node ./medium_server_load_balancer/stage/stage_multi_instance.js spawn "   , 
-    "global:medium:stage:server:remove" :"node ./medium_server_load_balancer/stage/stage_multi_instance.js remove "   , 
-    "global:medium:stage:server:restart" :"node ./medium_server_load_balancer/stage/stage_multi_instance.js restart "   , 
-   
-    "pm2:server:dev":"nodemon ./src/server.ts",
-    "pm2:server:stage":"node ./dist/server.js",
-    "pm2:server:prod":"node ./dist/server.js",
-
+    "global:medium:dev:server:spawn": "node ./medium_server_load_balancer/dev/dev_multi_instance.js spawn ",
+    "global:medium:dev:server:remove": "node ./medium_server_load_balancer/dev/dev_multi_instance.js remove ",
+    "global:medium:dev:server:restart": "node ./medium_server_load_balancer/dev/dev_multi_instance.js restart ",
+    "global:medium:prod:server:spawn": "node ./medium_server_load_balancer/prod/prod_multi_instance.js spawn ",
+    "global:medium:prod:server:remove": "node ./medium_server_load_balancer/prod/prod_multi_instance.js remove ",
+    "global:medium:prod:server:restart": "node ./medium_server_load_balancer/prod/prod_multi_instance.js restart ",
+    "global:medium:stage:server:spawn": "node ./medium_server_load_balancer/stage/stage_multi_instance.js spawn ",
+    "global:medium:stage:server:remove": "node ./medium_server_load_balancer/stage/stage_multi_instance.js remove ",
+    "global:medium:stage:server:restart": "node ./medium_server_load_balancer/stage/stage_multi_instance.js restart ",
+    "pm2:server:dev": "nodemon ./src/server.ts",
+    "pm2:server:stage": "node ./dist/server.js",
+    "pm2:server:prod": "node ./dist/server.js",
     "build:dev": "env-cmd  -f .env.development nodemon ./src/server.ts",
     "build:stage": "env-cmd  -f .env.stage node ./dist/server.js",
     "build:prod": "env-cmd  -f .env.production node ./dist/server.js ",
     "clean:pm2:all": "pm2 delete all || true && pm2 flush",
-    
     "global:kafka:redisqueue:consumers:dev:spawn": "node ./consumer_load_balancer/dev/dev_multi_instance.js spawn",
     "global:kafka:redisqueue:consumers:dev:remove": "node ./consumer_load_balancer/dev/dev_multi_instance.js remove",
     "global:kafka:redisqueue:consumers:dev:restart": "node ./consumer_load_balancer/dev/dev_multi_instance.js restart",
-    
     "global:kafka:redisqueue:consumers:prod:spawn": "node ./consumer_load_balancer/prod/prod_multi_instance.js spawn",
     "global:kafka:redisqueue:consumers:prod:remove": "node ./consumer_load_balancer/prod/prod_multi_instance.js remove",
     "global:kafka:redisqueue:consumers:prod:restart": "node ./consumer_load_balancer/prod/prod_multi_instance.js restart",
-     
     "global:redis:consumers:dev:spawn": "node ./consumer_load_balancer/dev/redis_consumers/redis_consumer_multi_instance.js spawn",
     "global:redis:consumers:dev:remove": "node ./consumer_load_balancer/dev/redis_consumers/redis_consumer_multi_instance.js remove",
     "global:redis:consumers:dev:restart": "node ./consumer_load_balancer/dev/redis_consumers/redis_consumer_multi_instance.js restart",
-    
     "global:redis:consumers:prod:spawn": "node ./consumer_load_balancer/prod/redis_consumers/redis_consumer_multi_instance.js spawn",
     "global:redis:consumers:prod:remove": "node ./consumer_load_balancer/prod/redis_consumers/redis_consumer_multi_instance.js remove",
     "global:redis:consumers:prod:restart": "node ./consumer_load_balancer/prod/redis_consumers/redis_consumer_multi_instance.js restart",
-    
-
     "init:kafka:driverConsumerPoolInstance:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/driver_pool_consumer.ts",
     "init:kafka:userDriverRequestInstance:dev": "env-cmd  -f .env.development nodemon ./src/consumer_groups/kafka_consumer.ts",
     "init:kafka:driverAcceptedRides:dev": "env-cmd -f .env.development nodemon ./src/consumer_groups/driverAcceptRides.ts",
-    
     "init:kafka:driverConsumerPoolInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/driver_pool_consumer.js",
     "init:kafka:userDriverRequestInstance:prod": "env-cmd  -f .env.production node ./dist/consumer_groups/kafka_consumer.js",
     "init:kafka:driverAcceptedRides:prod": "env-cmd -f .env.production node ./dist/consumer_groups/driverAcceptRides.js",
-
     "init:redis:acceptedRideUpdateByDriver:dev": "env-cmd  -f .env.development nodemon  ./src/services/queues/queueConsumers/index.ts",
     "init:redis:acceptedRideUpdateByDriver:prod": "env-cmd -f .env.production node ./dist/services/queues/queueConsumers/index.js"
   },
@@ -67,6 +54,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.11.1",
+    "@socket.io/admin-ui": "^0.5.1",
     "@socket.io/redis-adapter": "^8.3.0",
     "@socket.io/redis-emitter": "^5.1.0",
     "@types/express": "^5.0.3",
