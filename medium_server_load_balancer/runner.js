@@ -21,7 +21,7 @@ function runCommand(command, name) {
 // Spawn pm2 processes
 async function spawnInstances(scriptName, baseName, ports) {
   for (let i = 0; i < ports.length; i++) {
-    const name = `${baseName}-${i+1}-ports[i]`;
+    const name = `${baseName}-${i+1}-${ports[i]}`;
     const command = isWindows
       ? `set PORT=${ports[i]} && pm2 start cmd --name "${name}" -- /c "npm run ${scriptName}"`
       : `set PORT=${ports[i]} && pm2 start npm --name "${name}" -- run ${scriptName}`;
