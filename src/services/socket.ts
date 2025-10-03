@@ -18,6 +18,9 @@ class SocketServer {
 
   constructor() {
     this.io = new Server(server, {
+       pingInterval: 25000, // send ping every 25s
+      pingTimeout: 60000,   // wait 60s before closing
+      transports: ["websocket"], // enable both transports
       cors: {
         origin: "*", // you can replace this with specific origin for security
       },
